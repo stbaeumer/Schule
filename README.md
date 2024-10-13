@@ -1,12 +1,13 @@
 # Schule.exe
 
-**_Schule.exe_** bietet Schulverwaltung Unterstützung an Schnittstellen zwischen Programmen:
+**_Schule.exe_** bietet Unterstützung in der Schulverwaltung an Schnittstellen zwischen Programmen. Z.B. Unterstützung ...
 
- - **_Schule.exe_** unterstützt die Migration von _Atlantis_ nach _SchILD NRW_, indem Importdateien für _SchILD NRW_ erstellt werden.
- - **_Schule.exe_** unterstützt die Haupterhebung, indem Leistungsdaten von _Webuntis_ nach _SchILD NRW_ übertragen werden. Dadurch kann die UVD direkt aus _SchILD NRW_ generiert werden.
- - **_Schule.exe_** unterstützt bei Zeugniskonferenzen, indem Noten und Fehlzeiten von Webuntis nach SchILD übertragen werden.
+ - bei der Migration von _Atlantis_ nach _SchILD NRW_, indem Importdateien für _SchILD NRW_ erstellt werden.
+ - bei der Haupterhebung, indem Leistungsdaten von _Webuntis_ nach _SchILD NRW_ übertragen werden. Dadurch kann die UVD direkt aus _SchILD NRW_ generiert werden.
+ - bei Zeugniskonferenzen, indem Noten und Fehlzeiten von Webuntis nach SchILD übertragen werden.
+ - beim Übertrag von Schüler*innen nach Webuntis (inkl. Fotos) 
 
-### Voraussetzungen für den Einstz von **_Schule.exe_**
+## Voraussetzungen für den Einstz von **_Schule.exe_**
 
 1. Administrativer Zugang zu _Atlantis_
 1. Administrativer Zugang zu _SchILD NRW_
@@ -16,23 +17,23 @@
 
 ![Kurse benennen](https://github.com/stbaeumer/webuntis2schild/blob/main/bilder/kurse.png?raw=true)
 
-### Der erste Start
+## Der erste Start
 
 Schule.exe wird ohne Installation in den Ordner der Wahl verschoben und dann doppelgeklickt.
 
-<div style="background-color:#2d2d2d; color:white; padding:10px; border-radius:5px;">
+<div style="background-color:#000000; color:white; padding:10px; border-radius:5px;">
 <pre>
-               Schule.exe | https://github.com/stbaeumer/Schule | GPLv3 | Stefan Bäumer 2024 | 10.10.2024
-========================================================================================================================
-                    
+     Schule.exe | https://github.com/stbaeumer/Schule | GPLv3 | Stefan Bäumer 2024 | 10.10.2024
+==================================================================================================
+
+
+
+      
 </pre>
 </div>
 
 
-
-
-
-Folgende Ordnerstruktur muss im selben Ordner angelegt werden, in dem auch die Schule.exe heruntergeladen wurde:
+**_Schule.exe_** legt folgende Ordnerstruktur im selben Ordner an, in dem auch die **_Schule.exe_** ausgeführt wird:
 
 ```
 Schule.exe
@@ -62,10 +63,9 @@ Schule.exe
         SchuelerLernabschnittsdaten.dat
 ```
 
-Nicht alle gezeigten Dateien müssen vorhanden sein. **_Schule.exe_** gibt für jede Aufgabe Rückmeldung , welche Dateien fehlen. Die Zeitstempel in den Dateinamen sind Beispiele und können abweichen. Der erste Teil des Dateinamens (inklusive Unterstrich) darf nicht verändert werden, um die Dateien einlesen zu können.
+Nicht alle gezeigten Dateien müssen vorhanden sein. **_Schule.exe_** gibt für jede Aufgabe Rückmeldung, welche Dateien fehlen. Die Zeitstempel in den Dateinamen sind Beispiele und können abweichen. Der erste Teil des Dateinamens (inklusive Unterstrich) darf nicht verändert werden, um die Dateien einlesen zu können.
 
 Die Dateien im Ordner *ImportfürSchild* werden von **_Schule.exe_** erstellt.
-
 
 ## Migration von Atlantis nach SchILD NRW
 
