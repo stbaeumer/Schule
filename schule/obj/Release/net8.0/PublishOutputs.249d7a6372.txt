@@ -1,0 +1,5 @@
+C:\Users\bm\Repos\webuntis2schild\exe\webuntis2schild.exe
+C:\Users\bm\Repos\webuntis2schild\exe\webuntis2schild.dll
+C:\Users\bm\Repos\webuntis2schild\exe\webuntis2schild.deps.json
+C:\Users\bm\Repos\webuntis2schild\exe\webuntis2schild.runtimeconfig.json
+C:\Users\bm\Repos\webuntis2schild\exe\webuntis2schild.pdb
