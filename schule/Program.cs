@@ -7,6 +7,7 @@ using System.Resources;
 using System.Text;
 
 Global.Delimiter = ['|', ';', ',', '\t'];
+Global.ReferenzMerkmale = new List<string>() { "Name", "Nachname", "Vorname", "Klasse", "Geburtsdatum" };
 Global.DisplayHeader();
 Aliasse aliasse = new Aliasse("Aliasse.xlsx");
 Dateien dateien = new Dateien();
@@ -37,7 +38,7 @@ do
             Global.ZeileSchreiben(0, vergleichsdateiDateiPfad, "existiert", null);
 
             Datei vergleichsdatei = new Datei(vergleichsdateiDateiPfad);
-            vergleichsdatei.Zeilen.Add(new Zeile(zielDatei.Zeilen.Where(x => x.IstKopfzeile).FirstOrDefault().Zellen));
+            vergleichsdatei.Zeilen.Add(new Zeile(zielDatei.Zeilen.Where(x => x.IstKopfzeile).FirstOrDefault().Zellen, true));
             vergleichsdatei.AddZeilen();
                     
             Global.ZeileSchreiben(0, vergleichsdateiDateiPfad, vergleichsdatei.Zeilen.Count().ToString(), null);

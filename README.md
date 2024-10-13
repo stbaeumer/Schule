@@ -1,6 +1,6 @@
 # Schule.exe
 
-**_Schule.exe_** unterstüzt Schulverwaltung an Schnittstellen zwischen Programmen:
+**_Schule.exe_** bietet Schulverwaltung Unterstützung an Schnittstellen zwischen Programmen:
 
  - **_Schule.exe_** unterstützt die Migration von _Atlantis_ nach _SchILD NRW_, indem Importdateien für _SchILD NRW_ erstellt werden.
  - **_Schule.exe_** unterstützt die Haupterhebung, indem Leistungsdaten von _Webuntis_ nach _SchILD NRW_ übertragen werden. Dadurch kann die UVD direkt aus _SchILD NRW_ generiert werden.
@@ -16,7 +16,21 @@
 
 ![Kurse benennen](https://github.com/stbaeumer/webuntis2schild/blob/main/bilder/kurse.png?raw=true)
 
-### Vorbereitungen
+### Der erste Start
+
+Schule.exe wird ohne Installation in den Ordner der Wahl verschoben und dann doppelgeklickt.
+
+<div style="background-color:#2d2d2d; color:white; padding:10px; border-radius:5px;">
+<pre>
+               Schule.exe | https://github.com/stbaeumer/Schule | GPLv3 | Stefan Bäumer 2024 | 10.10.2024
+========================================================================================================================
+                    
+</pre>
+</div>
+
+
+
+
 
 Folgende Ordnerstruktur muss im selben Ordner angelegt werden, in dem auch die Schule.exe heruntergeladen wurde:
 

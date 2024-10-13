@@ -32,7 +32,7 @@ public class Aliasse : List<string[]>
                     workbook.SaveAs(filePath);
                 }
 
-                string[] hinweise = new string[] { "Die Datei wird benötigt, um unterschiedliche Spaltenüberschriften aufeinander zu matchen.", "Öffnen Sie die Exceldatei, um alle Aliasse zu sichten", "Ergänzen Sie Aliasse, wenn Sie merken, dass Spalten in der Zieldatei ungewollt leer bleiben.", "Ergänzen Sie die Werte in der Exceldatei." };
+                string[] hinweise = new string[] { "Die Datei wird benötigt, um unterschiedliche Spaltenüberschriften aufeinander zu matchen.", "Öffnen Sie die Exceldatei, um alle Aliasse zu sichten", "Ergänzen Sie Aliasse, wenn Sie merken, dass Spalten in der Zieldatei ungewollt leer bleiben." };
 
                 Global.ZeileSchreiben(0, "Die Excel-Datei namens " + filePath + " wird erstellt", "ok", new Exception("ok"), hinweise);
             }
@@ -67,10 +67,11 @@ public class Aliasse : List<string[]>
         List<string[]> vorgabewerte =
         [
             new[] { "1. tel.-nr.", "schüler: telefon", "address.phone", "Telefon" },
-        new[] { "1.schulform s1" },
+        new[] { "1.schulform s1","1.schulform s1" },
         new[] { "2. tel.-nr.", "schüler: telefon 2", "address.mobile", "mobil" },
-        new[] { "2.förderschwerpunkt" },
+        new[] { "2.förderschwerpunkt", "63 förderschwerpunkt 2", "2. förderschwerpunkt" },
         new[] { "abmeldedatum religionsunterricht" },
+        new[] { "abschluss", "Art des Abschlusses an eigener Schule bei Verlassen der eigenen Schule" },
         new[] { "abschnitt" },
         new[] { "adressart" },
         new[] { "anmeldedatum religionsunterricht" },
@@ -130,9 +131,8 @@ public class Aliasse : List<string[]>
         new[] { "fehlstunden", "Fehlstd" },
         new[] { "UnentschFehlstd", "Unentsch.Fehlstd." },
         new[] { "fachklasse", "6 fachklasse" },
-        new[] { "10 foerderschwerp", "förderschwerpunkt" },
-        new[] { "63 förderschwerpunkt 2" },
-        new[] { "59 gs-empfehlung" },
+        new[] { "10 foerderschwerp", "förderschwerpunkt" },        
+        new[] { "59 gs-empfehlung", "Übergangsempf. JG5" },
         new[] { "16 gebdat", "schüler: geburtsdatum (yyyy-mm-dd)", "birthdate", "geburtsdatum" },
         new[] { "geburtsdatum", "birthday", "birthdate" },
         new[] { "geburtsland mutter", "54 geb.land (mutter)" },
@@ -157,8 +157,8 @@ public class Aliasse : List<string[]>
         new[] { "klassenart" },
         new[] { "lehrkraft", "benutzer" },
         new[] { "23 labk" },
-        new[] { "26 lsschulform" },
-        new[] { "27 lsschulnummer" },
+        new[] { "26 lsschulform", "ls schulform" },
+        new[] { "27 lsschulnummer", "ls schulnr." },
         new[] { "28 lsgliederung" },
         new[] { "29 lsfachklasse" },
         new[] { "30 lsklassenart" },
@@ -172,9 +172,7 @@ public class Aliasse : List<string[]>
         new[] { "ls fachklasse" },
         new[] { "ls gliederung" },
         new[] { "ls jahrgang" },
-        new[] { "ls reformpädagogik" },
-        new[] { "ls schulform" },
-        new[] { "ls schulnr." },
+        new[] { "ls reformpädagogik" },        
         new[] { "ls versetzung" },
         new[] { "60 massnahmetraeger" },
         new[] { "nachname", "surname", "schüler: nachname", "longname", "familienname" },
@@ -183,7 +181,7 @@ public class Aliasse : List<string[]>
         new[] { "noch frei" },
         new[] { "note", "gesamtnote" },
         new[] { "nr.stammschule" },
-        new[] { "8 orgform" },
+        new[] { "8 orgform", "orgform" },
         new[] { "ort", "15. ort", "schüler: ort", "address.city", "Wohnort" },
         new[] { "schüler: ortsteil" },
         new[] { "66 produktname" },
@@ -195,11 +193,10 @@ public class Aliasse : List<string[]>
         new[] { "20 relianmeldung" },
         new[] { "21 reliabmeldung" },
         new[] { "schulgliederung" },
-        new[] { "schulnr.neue schule" },
         new[] { "schulpflicht erf.", "47 schulpflichterf" },
         new[] { "48 schulwechselform" },
-        new[] { "11 schwerstbehindert" },
-        new[] { "18 staatsang", "1.staatsang.", "schüler: staat (auflösung)" },
+        new[] { "11 schwerstbehindert", "Schwerstbehinderung" },
+        new[] { "18 staatsang", "1.staatsang.", "schüler: staat (auflösung)", "1. staatsang." },
         new[] { "statistikkrz konfession" },
         new[] { "status", "2 status" },
         new[] { "straße", "schüler: straße", "address.street" },
@@ -232,7 +229,8 @@ public class Aliasse : List<string[]>
         new[] { "medicalReportDuty" },
         new[] { "schulpflicht" },
         new[] { "majority" },
-        new[] { "name" }
+        new[] { "name" },
+        new[] { "Schulnummer der aufnehmenden Schule", "Schulnr.neue Schule", "Schulnr. neue Schule" }
 
         // externKey,medicalReportDuty,schulpflicht,majority,address.phone
 

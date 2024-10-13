@@ -38,6 +38,8 @@ public class Datei
 
             Datei masterdatei = dateien[0];
 
+            var gR = Reihenfolge.GeeigneteReferenztabellen;
+
             foreach (var zeileIn in masterdatei.Zeilen)
             {
                 if (!zeileIn.IstKopfzeile) // Die Kopfzeile bleibt unberücksichtigt
@@ -46,18 +48,32 @@ public class Datei
 
                     foreach (var reihenElement in Reihenfolge)
                     {
-                        if (reihenElement.QuellDateiIndex >= 0)
+                        if (reihenElement.QuellDateiIndex[0] >= 0)
                         {
-                            if (reihenElement.QuellDateiPfad == masterdatei.DateiPfad)
+                            if (reihenElement.QuellDateiPfad[0] == masterdatei.DateiPfad)
                             {
-                                zeileOut.Zellen.Add(zeileIn.Zellen[reihenElement.QuellDateiIndex]);
+                                zeileOut.Zellen.Add(zeileIn.Zellen[reihenElement.QuellDateiIndex[0]]);
                             }
                             else
                             {
-                                // Es muss aus der verknüpften Tabelle die Zeile gefunden werden, in der die Identifikationsmerkmale übereinstimmen.
-                                // In der MarksPerLesson sind Identifikationsmerkmale Name und Klasse
+                                // Die möglichen reihenElemente werden ermittelt.
+                                // Mindestens drei matchende Merkmale sind für eine Verknüpfung von Dateien notwendig. 
 
-                                int iName = masterdatei.GetSpaltenIndex("name");
+                                var referenzReihenElemente = Reihenfolge.Where(x => x.ReferenzMerkmal == true).ToList();
+                                
+                                foreach (var slaveDatei in dateien)
+                                {
+                                    foreach (var rElement in referenzReihenElemente)
+                                    {
+                                        if (slaveDatei.DateiPfad == rElement.QuellDateiPfad[0])
+                                        {
+
+                                        } 
+                                    }
+                                }
+
+
+
                                 int iKlasse = masterdatei.GetSpaltenIndex("klasse");
 
                                 string name = zeileIn.Zellen[1].ToString();
@@ -125,11 +141,11 @@ public class Datei
 
                     foreach (var reihenElement in Reihenfolge)
                     {
-                        if (reihenElement.QuellDateiIndex >= 0)
+                        if (reihenElement.QuellDateiIndex[0] >= 0)
                         {
-                            if (reihenElement.QuellDateiPfad == masterdatei.DateiPfad)
+                            if (reihenElement.QuellDateiPfad[0] == masterdatei.DateiPfad)
                             {
-                                zeileOut.Zellen.Add(zeileIn.Zellen[reihenElement.QuellDateiIndex]);
+                                zeileOut.Zellen.Add(zeileIn.Zellen[reihenElement.QuellDateiIndex[0]]);
                             }
                             else
                             {
@@ -591,7 +607,7 @@ public class Datei
                     }
 
                     // Wenn die Values der Zeile mit der Kopfzeile identisch sind, dann wird die Zeile nicht hinzugefügt.
-                    if (Zeilen.Count == 0 || !Zeilen[0].Zellen.SequenceEqual(zellen))
+                    if (Zeilen.Count == 0 || Zeilen[0].Zellen[0].ToLower() != zellen[0].ToLower())
                     {
                         Zeilen.Add(new Zeile(zellen));
                     }

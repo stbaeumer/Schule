@@ -16,7 +16,8 @@ public static class Global
     public static string InteressierendeBeschreibung { get; internal set; }    
     public static string Abschnitt { get; set; }
     public static List<int> AktSj { get; set; }
-    public static IEnumerable<char> Delimiter { get; internal set; }
+    public static IEnumerable<char> Delimiter { get; set; }
+    public static List<string> ReferenzMerkmale { get; set; }
 
     internal static void DisplayHeader(string text = "h1", char unterstrich = '=')
     {
@@ -64,11 +65,61 @@ public static class Global
         {
             if (hinweise != null)
             {
+                int leftPad = 5;
+
                 Console.ForegroundColor = ConsoleColor.Green;
-                for (int i = 0; i < hinweise.Count(); i++)
-                {
-                    var x = i == 0 ? "  " : i.ToString().PadLeft(5) + ". ";
-                    Console.WriteLine(x + hinweise[i]);
+                for (int i = 0; i < hinweise.Length; i++)
+               {
+                    // Text in Wörter aufteilen
+                    string[] wörter = hinweise[i].Split(' ');
+                    StringBuilder aktuelleZeile = new StringBuilder();
+                    List<string> zeilen = new List<string>();
+
+                    foreach (var wort in wörter)
+                    {
+                        if (aktuelleZeile.Length + wort.Length + 1 > gesamtbreite - leftPad)
+                        {
+                            zeilen.Add(aktuelleZeile.ToString());
+                            aktuelleZeile.Clear();
+                            //aktuelleZeile.Append(' ', leftPad); // Einrücken um den Wert leftPad
+                        }
+
+                        if (aktuelleZeile.Length > 0)
+                        {
+                            aktuelleZeile.Append(" ");
+                        }
+                        aktuelleZeile.Append(wort);
+                    }
+
+                    if (aktuelleZeile.Length > 0)
+                    {
+                        zeilen.Add(aktuelleZeile.ToString());
+                    }
+
+                    // Zeilen ausgeben
+
+                    if (i == 0)
+                    {
+                        for (int j = 0; j < zeilen.Count(); j++)
+                        {
+                            Console.WriteLine("".PadRight(leftPad - 2, ' ') + zeilen[j]);
+                        }
+                    }
+                    else
+                    {
+                        for (int j = 0; j < zeilen.Count(); j++)
+                        {
+                            if (j==0)
+                            {
+                                Console.WriteLine(i.ToString().PadLeft(leftPad, ' ') + ". " + zeilen[j]);
+                            }
+                            else
+                            {
+                                Console.WriteLine("".PadLeft(leftPad, ' ') + "  " + zeilen[j]);
+                            }
+                            
+                        }
+                    }
                 }
                 Console.ForegroundColor = ConsoleColor.White;
             }

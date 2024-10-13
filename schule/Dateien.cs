@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Math;
+﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Math;
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.Extensions.Configuration;
@@ -19,13 +20,12 @@ public class Dateien : List<Datei>
             "Exportieren Sie die Datei aus SchILD, indem Sie:", "In SchILD den Pfad gehen: Datenaustausch > Schnittstelle > Export", "Die Datei auswählen.", "Die Datei speichern im Ordner: " + Directory.GetCurrentDirectory()
         };
 
-        this.Add(new Datei(
-@"ImportFürSchild\SchuelerBasisdaten.dat",                                                                                                      // Dateipfad
-datbeschreibung,                                                                                                                        // Hinweise zum Download
+        this.Add(new Datei(@"ImportFürSchild\SchuelerBasisdaten.dat",        // Dateipfad
+datbeschreibung,            // Hinweise zum Download
 new List<string> { "Nachname", "Vorname", "Geburtsdatum", "Geschlecht", "Status", "PLZ", "Ort", "Straße", "Aussiedler", "1. Staatsang.", "Konfession", "StatistikKrz Konfession", "Aufnahmedatum", "Abmeldedatum Religionsunterricht", "Anmeldedatum Religionsunterricht", "Schulpflicht erf.", "Reform-Pädagogik", "Nr. Stammschule", "Jahr", "Abschnitt", "Jahrgang", "Klasse", "Schulgliederung", "OrgForm", "Klassenart", "Fachklasse", "Noch frei", "Verpflichtung Sprachförderkurs", "Teilnahme Sprachförderkurs", "Einschulungsjahr", "Übergangsempf. JG5", "Jahr Wechsel S1", "1. Schulform S1", "Jahr Wechsel S2", "Förderschwerpunkt", "2. Förderschwerpunkt", "Schwerstbehinderung", "Autist", "LS Schulnr.", "LS Schulform", "Herkunft", "LS Entlassdatum", "LS Jahrgang", "LS Versetzung", "LS Reformpädagogik", "LS Gliederung", "LS Fachklasse", "LS Abschluss", "Abschluss", "Schulnr. neue Schule", "Zuzugsjahr", "Geburtsland Schüler", "Geburtsland Mutter", "Geburtsland Vater", "Verkehrssprache", "Dauer Kindergartenbesuch" },       // Kopfzeile
-"SchuelerBasisdaten.dat erzeugen",                       // Titel der Datei; wird im Menü angezeigt
-@"Beschreibung: Enthält die Basis-Stammdaten der Schüler, insbesondere solche, die für die Statistik relevant sind.",                 // Beschreibung
-new string[] { "sim", "Student_" },                     // andere benötigte Dateien. Die erste Datei bestimmt die Anzahl der Zeilen der herauskommenden Datei
+"SchuelerBasisdaten.dat aus Atlantis-SIM.txt und Webuntis-Student_...csv erzeugen",  // Titel der Datei; wird im Menü angezeigt
+@"Beschreibung: Enthält die Basis-Stammdaten der Schüler, insbesondere solche, die für die Statistik relevant sind.", // Beschreibung
+new string[] { "Student_", "sim" },                     // andere benötigte Dateien. Die erste Datei bestimmt die Anzahl der Zeilen der herauskommenden Datei
 "SchuelerBasisdaten"));                                 // Funktionsname (Case-Sensitive)
 
         this.Add(new Datei(
@@ -248,6 +248,42 @@ new List<string> { "Datum", "Name", "Klasse", "Fach", "Prüfungsart", "Note", "B
         //    new string[] { }
         //    )
         //);
+
+
+        OrdnerAnlegen();
+    }
+
+    private void OrdnerAnlegen()
+    {
+
+        bool exportOrdnerErstellt = false;
+        bool importOrdnerErstellt = false;
+
+        foreach (var ordner in this.Select(x => Path.GetDirectoryName(x.DateiPfad)))
+        {
+            if (!Directory.Exists(ordner))
+            {
+                Directory.CreateDirectory(ordner);
+                Global.ZeileSchreiben(0, ordner, "wurde erstellt", null);
+                if (ordner.ToLower().Contains("export"))
+                {
+                    exportOrdnerErstellt = true;
+                }
+                if (ordner.ToLower().Contains("import"))
+                {
+                    importOrdnerErstellt = true;
+                }
+            }
+        }
+        if (importOrdnerErstellt)
+        {
+            Console.WriteLine("   Es wurden Ordner für den Import von Datein in Programme erstellt. Schule.exe füllt die Import-Ordner mit entsprechenden Dateien.");
+        }
+        if (exportOrdnerErstellt)
+        {
+            Console.WriteLine("   Es wurden Ordner für den Export von Dateien aus Programmen erstellt.");
+            Console.WriteLine("    Folgen Sie den Anweisungen, um die Ordner passend zu füllen.");
+        }
     }
 
     public Dateien(Schülers interessierendeSchuelers)
