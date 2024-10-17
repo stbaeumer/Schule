@@ -66,7 +66,7 @@ public class Aliasse : List<string[]>
     {
         List<string[]> vorgabewerte =
         [
-            new[] { "1. tel.-nr.", "schüler: telefon", "address.phone", "Telefon" },
+            new[] { "1. tel.-nr.", "schüler: telefon", "address.phone", "Telefon", "Telefonnr." },
         new[] { "1.schulform s1","1.schulform s1" },
         new[] { "2. tel.-nr.", "schüler: telefon 2", "address.mobile", "mobil" },
         new[] { "2.förderschwerpunkt", "63 förderschwerpunkt 2", "2. förderschwerpunkt" },

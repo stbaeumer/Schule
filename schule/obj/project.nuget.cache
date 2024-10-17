@@ -1,12 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "/igQ2x0DxIM=",
+  "dgSpecHash": "RWmetv/jC68=",
   "success": true,
-  "projectFilePath": "C:\\Users\\bm\\source\\repos\\Schule\\schule\\schule.csproj",
+  "projectFilePath": "U:\\Repos\\Schule\\schule\\schule.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\bm\\.nuget\\packages\\bouncycastle.cryptography\\2.4.0\\bouncycastle.cryptography.2.4.0.nupkg.sha512",
     "C:\\Users\\bm\\.nuget\\packages\\closedxml\\0.104.1\\closedxml.0.104.1.nupkg.sha512",
     "C:\\Users\\bm\\.nuget\\packages\\closedxml.parser\\1.2.0\\closedxml.parser.1.2.0.nupkg.sha512",
+    "C:\\Users\\bm\\.nuget\\packages\\csvhelper\\33.0.1\\csvhelper.33.0.1.nupkg.sha512",
     "C:\\Users\\bm\\.nuget\\packages\\documentformat.openxml\\3.0.1\\documentformat.openxml.3.0.1.nupkg.sha512",
     "C:\\Users\\bm\\.nuget\\packages\\documentformat.openxml.framework\\3.0.1\\documentformat.openxml.framework.3.0.1.nupkg.sha512",
     "C:\\Users\\bm\\.nuget\\packages\\excelnumberformat\\1.1.0\\excelnumberformat.1.1.0.nupkg.sha512",

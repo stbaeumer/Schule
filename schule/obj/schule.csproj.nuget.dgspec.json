@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\bm\\source\\repos\\Schule\\schule\\schule.csproj": {}
+    "U:\\Repos\\Schule\\schule\\schule.csproj": {}
   },
   "projects": {
-    "C:\\Users\\bm\\source\\repos\\Schule\\schule\\schule.csproj": {
+    "U:\\Repos\\Schule\\schule\\schule.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\bm\\source\\repos\\Schule\\schule\\schule.csproj",
+        "projectUniqueName": "U:\\Repos\\Schule\\schule\\schule.csproj",
         "projectName": "schule",
-        "projectPath": "C:\\Users\\bm\\source\\repos\\Schule\\schule\\schule.csproj",
+        "projectPath": "U:\\Repos\\Schule\\schule\\schule.csproj",
         "packagesPath": "C:\\Users\\bm\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\bm\\source\\repos\\Schule\\schule\\obj\\",
+        "outputPath": "U:\\Repos\\Schule\\schule\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\bm\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -48,6 +48,10 @@
             "ClosedXML": {
               "target": "Package",
               "version": "[0.104.1, )"
+            },
+            "CsvHelper": {
+              "target": "Package",
+              "version": "[33.0.1, )"
             },
             "Microsoft.Extensions.Configuration": {
               "target": "Package",
@@ -86,7 +90,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

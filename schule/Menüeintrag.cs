@@ -6,7 +6,16 @@
     public string Beschreibung { get; set; }
     public List<string> Kopfzeile { get; private set; }
     public object Objekt { get; set; }
-        
+
+
+    public Menüeintrag(string titel, string dateiPfad, string beschreibung, List<string> kopfzeile)
+    {
+        Titel = titel;
+        DateiPfad = dateiPfad;
+        Beschreibung = beschreibung;
+        Kopfzeile = kopfzeile;
+    }
+
     public Menüeintrag(string titel, string funktionsname, string dateiPfad, string beschreibung, List<string> kopfzeile, object objekt)
     {
         Titel = titel;

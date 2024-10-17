@@ -1,10 +1,13 @@
 ﻿
+using CsvHelper.Configuration;
+using CsvHelper;
 using System.Diagnostics;
 using System.Formats.Asn1;
 using System.Globalization;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using System.Collections.Generic;
 
 public static class Global
 {
@@ -13,7 +16,7 @@ public static class Global
     public static List<Datei> DateienNurInteressierendeSuS { get; private set; }
     public static string InteressierenderFunktionsname { get; internal set; }
     public static string InteressierenderTitel { get; internal set; }
-    public static string InteressierendeBeschreibung { get; internal set; }    
+    public static string InteressierendeBeschreibung { get; internal set; }
     public static string Abschnitt { get; set; }
     public static List<int> AktSj { get; set; }
     public static IEnumerable<char> Delimiter { get; set; }
@@ -59,7 +62,7 @@ public static class Global
 
         int punkte = gesamtbreite - linkerAbstand - linkeSeite.Length - rechteSeite.Length - 4;
         var mitte = " .".PadRight(Math.Max(3, punkte), '.') + " ";
-        Console.WriteLine("".PadRight(linkerAbstand+2) + linkeSeite + mitte + rechteSeite);
+        Console.WriteLine("".PadRight(linkerAbstand + 2) + linkeSeite + mitte + rechteSeite);
 
         if (fehler != null)
         {
@@ -69,7 +72,7 @@ public static class Global
 
                 Console.ForegroundColor = ConsoleColor.Green;
                 for (int i = 0; i < hinweise.Length; i++)
-               {
+                {
                     // Text in Wörter aufteilen
                     string[] wörter = hinweise[i].Split(' ');
                     StringBuilder aktuelleZeile = new StringBuilder();
@@ -109,7 +112,7 @@ public static class Global
                     {
                         for (int j = 0; j < zeilen.Count(); j++)
                         {
-                            if (j==0)
+                            if (j == 0)
                             {
                                 Console.WriteLine(i.ToString().PadLeft(leftPad, ' ') + ". " + zeilen[j]);
                             }
@@ -117,7 +120,7 @@ public static class Global
                             {
                                 Console.WriteLine("".PadLeft(leftPad, ' ') + "  " + zeilen[j]);
                             }
-                            
+
                         }
                     }
                 }
@@ -270,5 +273,184 @@ public static class Global
         {
             writer.WriteLine(v);
         }
+    }
+
+    internal static List<object> LiesDateien(string dateiName, string dateiendungen, string[] hinweise, string delimiter = "|")
+    {
+        var objekt = new List<object>();
+
+        string[] endungen = dateiendungen.Split(',');
+
+        var dateiPfad = CheckFile(dateiName, endungen);
+
+        if (dateiPfad == null)
+        {
+            Global.ZeileSchreiben(0, dateiName, "keine Datei gefunden", new Exception("keine Datei gefunden"), hinweise);
+            return new List<object>();
+        }
+
+        // Konfiguration für CsvReader: Header und Delimiter anpassen
+        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+        {
+            HeaderValidated = null,
+            MissingFieldFound = null,
+            HasHeaderRecord = true,   // Gibt an, dass die CSV-Datei eine Kopfzeile hat
+            Delimiter = delimiter
+        };
+
+        using (var reader = new StreamReader(dateiPfad))
+        using (var csv = new CsvReader(reader, config))
+        {
+            if (dateiName.ToLower().Contains("absenceperstudent"))
+            {
+                csv.Context.RegisterClassMap<AbsencePerStudentsMap>();
+                objekt.AddRange(new List<AbsencePerStudent>(csv.GetRecords<AbsencePerStudent>()));
+            }
+            if (dateiName.ToLower().Contains("student_"))
+            {
+                csv.Context.RegisterClassMap<StudentsMap>();
+                objekt.AddRange(new List<Student>(csv.GetRecords<Student>()));
+            }
+            if (dateiName.ToLower().Contains("exportlessons"))
+            {
+                csv.Context.RegisterClassMap<ExportLessonsMap>();
+                objekt.AddRange(new List<ExportLesson>(csv.GetRecords<ExportLesson>()));
+            }
+            if (dateiName.ToLower().Contains("marksperlessons"))
+            {
+                csv.Context.RegisterClassMap<MarksPerLessonMap>();
+                objekt.AddRange(new List<MarkPerLesson>(csv.GetRecords<MarkPerLesson>()));
+            }
+            if (dateiName.ToLower().Contains("studentgroupstudents"))
+            {
+                csv.Context.RegisterClassMap<StudentgroupStudentsMap>();
+                objekt.AddRange(new List<StudentgroupStudent>(csv.GetRecords<StudentgroupStudent>()));
+            }
+            if (dateiName.ToLower().Contains("faecher"))
+            {
+                objekt.AddRange(new List<Fach>(csv.GetRecords<Fach>()));
+            }
+            if (dateiName.ToLower().Contains("schuelerbasisdaten"))
+            {
+                objekt.AddRange(new List<SchuelerBasisdatum>(csv.GetRecords<SchuelerBasisdatum>()));
+            }
+            if (dateiName.ToLower().Contains("schuelerleistungsdaten"))
+            {
+                objekt.AddRange(new List<SchuelerLeistungsdatum>(csv.GetRecords<SchuelerLeistungsdatum>()));
+            }
+            if (dateiName.ToLower().Contains("schuelerlernabschnittsdaten"))
+            {
+                objekt.AddRange(new List<SchuelerLernabschnittsdatum>(csv.GetRecords<SchuelerLernabschnittsdatum>()));
+            }
+            if (dateiName.ToLower().Contains("schuelerteilleistungen"))
+            {
+                objekt.AddRange(new List<SchuelerTeilleistung>(csv.GetRecords<SchuelerTeilleistung>()));
+            }
+            if (dateiName.ToLower().Contains("sim."))
+            {
+                csv.Context.RegisterClassMap<SimsMap>();
+                objekt.AddRange(new List<Sim>(csv.GetRecords<Sim>()));
+            }
+        }
+
+        Global.ZeileSchreiben(0, dateiPfad, objekt.Count().ToString(), null);
+
+        return objekt;
+    }
+
+
+    private static string CheckFile(string dateiPfad, string[] endungen)
+    {
+        // Wenn kein Parameter übergeben wird, dann wird der Dateipfad der Instanz verwendet, wobei Import durch Export ersetzt wird.
+
+        if (!Path.Exists(Path.GetDirectoryName(dateiPfad)))
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(dateiPfad));
+        }
+
+        var sourceFile = (from ext in endungen
+                          from f in Directory.GetFiles(Path.GetDirectoryName(dateiPfad), ext, SearchOption.AllDirectories)
+                          where Path.GetFileName(f).StartsWith(Path.GetFileName(dateiPfad))
+                          orderby File.GetLastWriteTime(f)
+                          select f).LastOrDefault();
+        if (sourceFile == null)
+        {
+            sourceFile = dateiPfad;
+        }
+        return sourceFile;
+    }
+
+    internal static List<object> ZeileSchreiben(List<object> absencePerStudents)
+    {
+        Global.ZeileSchreiben(0, absencePerStudents.ToString(), absencePerStudents.Count().ToString(), null);
+        return absencePerStudents;
+    }
+
+    public static class GlobalCsvMappings
+    {
+        public static Dictionary<string, List<string>> AliasMappings = new Dictionary<string, List<string>>();
+
+        // Diese Methode liest die Alias.csv ein
+        public static void LoadMappingsFromFile(string aliasFilePath)
+        {
+            using (var reader = new StreamReader(aliasFilePath))
+            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            {
+                var records = csv.GetRecords<CsvAlias>();
+                foreach (var record in records)
+                {
+                    // Jede PropertyName wird mit allen entsprechenden CSV-Namen verknüpft
+                    AliasMappings[record.PropertyName] = new List<string> { record.CSVName1, record.CSVName2 };
+                }
+            }
+        }
+
+        public static void AddMappings<T>(ClassMap<T> map)
+        {
+            var properties = typeof(T).GetProperties(); // Hole alle Eigenschaften der Klasse T
+
+            foreach (var property in properties)
+            {
+                var propertyName = property.Name;
+
+                // Prüfe, ob die Eigenschaft in der Alias.csv vorhanden ist
+                if (AliasMappings.TryGetValue(propertyName, out var csvNames))
+                {
+                    // Wenn ein Mapping in Alias.csv gefunden wurde, verwende die dynamischen Namen
+                    var mapExpression = GetPropertyMappingExpression<T>(propertyName);
+                    if (mapExpression != null)
+                    {
+                        map.Map(mapExpression).Name(csvNames.ToArray());
+                    }
+                }
+                else
+                {
+                    // Fallback: Verwende den Standardnamen der Eigenschaft, wenn kein Mapping gefunden wurde
+                    map.Map(typeof(T), property).Name(propertyName);
+                }
+            }
+        }
+
+
+
+        // Dynamische Methode, um eine Eigenschaft basierend auf dem Namen zu mappen
+        private static System.Linq.Expressions.Expression<Func<T, object>> GetPropertyMappingExpression<T>(string propertyName)
+        {
+            var param = System.Linq.Expressions.Expression.Parameter(typeof(T), "m");
+            var property = typeof(T).GetProperty(propertyName);
+            if (property == null) return null;
+
+            var body = System.Linq.Expressions.Expression.Convert(
+                System.Linq.Expressions.Expression.Property(param, property),
+                typeof(object)
+            );
+            return System.Linq.Expressions.Expression.Lambda<Func<T, object>>(body, param);
+        }
+    }
+    public class CsvAlias
+    {
+        public string PropertyName { get; set; }
+        public string CSVName1 { get; set; }
+        public string CSVName2 { get; set; }
     }
 }

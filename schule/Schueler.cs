@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using Org.BouncyCastle.Math.EC;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
 public class Schueler
@@ -98,36 +99,51 @@ public class Schueler
     public string Zeugnisdatum { get; internal set; }
     public string Zeugnisart { get; internal set; }
 
-    public void GetFehlstd(Datei absencesPerStudent, List<int> aktSj, int abschnitt)
+    public string GetFehlstd(AbsencePerStudents absencesPerStudent)
     {
         try
         {
-            //Fehlstd = (from a in absencesPerStudent.Zeilen
-            //           where a[Array.IndexOf(absencesPerStudent.Kopfzeile, "Schüler*innen")].Contains(Nachname)
-            //           where a[Array.IndexOf(absencesPerStudent.Kopfzeile, "Schüler*innen")].Contains(Vorname)
-            //           select Convert.ToInt32(a[Array.IndexOf(absencesPerStudent.Kopfzeile, "Fehlstd.")])).Sum().ToString();
+            var fehlstd = (from a in absencesPerStudent
+                           where a.Name.Contains(Nachname)
+                           where a.Name.Contains(Vorname)
+                           where a.Klasse.Contains(Klasse)
+                           select Convert.ToDouble(a.Fehlstd)).Sum();
+
+            if (fehlstd == 0)
+            {
+                return "";
+            }
+            
+            return fehlstd.ToString();
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex.ToString());
             Console.ReadKey();
+            return null;
         }
     }
 
-    public void GetUnentFehlstd(Datei absencesPerStudent, List<int> aktSj, int abschnitt)
+    public string GetUnentFehlstd(AbsencePerStudents absencesPerStudent)
     {
         try
         {
-            //UnentschFehlstd = (from a in absencesPerStudent.Zeilen
-            //                   where a[Array.IndexOf(absencesPerStudent.Kopfzeile, "Schüler*innen")].Contains(Nachname)
-            //                   where a[Array.IndexOf(absencesPerStudent.Kopfzeile, "Schüler*innen")].Contains(Vorname)
-            //                   where a[Array.IndexOf(absencesPerStudent.Kopfzeile, "Status")].Contains("nicht entsch.")
-            //                   select Convert.ToInt32(a[Array.IndexOf(absencesPerStudent.Kopfzeile, "Fehlstd.")])).Sum().ToString();
+            var fehlstd = (from a in absencesPerStudent
+                           where a.Name.Contains(Nachname)
+                           where a.Name.Contains(Vorname)
+                           where a.Klasse.Contains(Klasse)
+                           select Convert.ToDouble(a.Fehlstd)).Sum();
+            if (fehlstd == 0)
+            {
+                return "";
+            }
+            return fehlstd.ToString();
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex.ToString());
             Console.ReadKey();
+            return null;
         }
     }
 
@@ -219,5 +235,67 @@ public class Schueler
         Text = Regex.Replace(Text, "[Š]", "S");
 
         return Text;
+    }
+
+    //public void GetFehlstd(Datei absencesPerStudent, List<int> aktSj, int abschnitt)
+    //{
+    //    try
+    //    {
+    //        Fehlstd = (from a in absencesPerStudent.Zeilen
+    //                   where a[Array.IndexOf(absencesPerStudent.Kopfzeile, "Schüler*innen")].Contains(Nachname)
+    //                   where a[Array.IndexOf(absencesPerStudent.Kopfzeile, "Schüler*innen")].Contains(Vorname)
+    //                   select Convert.ToInt32(a[Array.IndexOf(absencesPerStudent.Kopfzeile, "Fehlstd.")])).Sum();
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        Console.WriteLine(ex.ToString());
+    //        Console.ReadKey();
+    //    }
+    //}
+
+    //public void GetUnentFehlstd(Datei absencesPerStudent, List<int> aktSj, int abschnitt)
+    //{
+    //    try
+    //    {
+    //        UnentschFehlstd = (from a in absencesPerStudent.Zeilen
+    //                           where a[Array.IndexOf(absencesPerStudent.Kopfzeile, "Schüler*innen")].Contains(Nachname)
+    //                           where a[Array.IndexOf(absencesPerStudent.Kopfzeile, "Schüler*innen")].Contains(Vorname)
+    //                           where a[Array.IndexOf(absencesPerStudent.Kopfzeile, "Status")].Contains("nicht entsch.")
+    //                           select Convert.ToInt32(a[Array.IndexOf(absencesPerStudent.Kopfzeile, "Fehlstd.")])).Sum();
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        Console.WriteLine(ex.ToString());
+    //        Console.ReadKey();
+    //    }
+    //}
+
+    internal string GetNote(MarksPerLessons marksPerLesson)
+    {
+        try
+        {
+            var note = from zeile in marksPerLesson
+                       where zeile.name.Contains(Vorname)
+                       where zeile.name.Contains(Nachname)
+                       where zeile.klasse.Contains(Klasse)
+                       select zeile.gesamtnote.Distinct().ToList();
+
+            if (note.Count() > 1)
+            {
+                Console.WriteLine("Mehr als eine Note");
+                Console.ReadKey();
+            }
+            if (note.Count() == 0)
+            {
+                return "";
+            }
+            return note.ToString();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+            Console.ReadKey();
+            return "";
+        }
     }
 }

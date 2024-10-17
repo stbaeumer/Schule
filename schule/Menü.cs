@@ -10,31 +10,32 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 public class Menü : List<Menüeintrag>
 {
     public int Eingabe { get; set; }
+    public int Auswahl { get; private set; }
 
     public Menü()
     {
-        Eingabe = 0;
-        var m = new List<Menüeintrag>();
+        //Eingabe = 0;
+        //var m = new List<Menüeintrag>();
 
-        m.Add(
-        new Menüeintrag(
-        "SchuelerTeilleistungen.dat erzeugen",
-        "SchuelerTeilleistungen",
-        @"ImportFürSchild\SchuelerTeilleistungen.dat",
-        @"Beschreibung: Enthält die Teilleistungsdaten (Teilleistung und Noten) eines Lernabschnittes (=Halbjahr oder Quartal) der Schüler. ",
-        new List<string> { "Nachname", "Vorname", "Geburtsdatum", "Jahr", "Abschnitt", "Fach", "Datum", "Teilleistung", "Note", "Bemerkung", "Lehrkraft" },
-        new Schülers()));
+        //m.Add(
+        //new Menüeintrag(
+        //"SchuelerTeilleistungen.dat erzeugen",
+        //"SchuelerTeilleistungen",
+        //@"ImportFürSchild\SchuelerTeilleistungen.dat",
+        //@"Beschreibung: Enthält die Teilleistungsdaten (Teilleistung und Noten) eines Lernabschnittes (=Halbjahr oder Quartal) der Schüler. ",
+        //new List<string> { "Nachname", "Vorname", "Geburtsdatum", "Jahr", "Abschnitt", "Fach", "Datum", "Teilleistung", "Note", "Bemerkung", "Lehrkraft" },
+        //new Schülers()));
 
-        m.Add(
-        new Menüeintrag(
-        "Schuelerbasisdaten.dat erzeugen",
-        "SchuelerBasisdaten",
-        @"ImportFürSchild\SchuelerBasisdaten.dat",
-        @"Beschreibung: Enthält die Basis-Stammdaten der Schüler, insbesondere solche, die für die Statistik relevant sind. Wenn die in den Dateien SchuelerZusatzdaten.dat, SchuelerLernabschnittsdaten.dat, SchuelerLeistungsdaten.dat, SchuelerSprachenfolgen.dat, SchuelerAbitur.dat, SchuelerTelefonnummern.dat, SchuelerErzieher.dat, SchuelerMerkmale.dat, SchuelerAdressen.dat enthaltenen Schüler schon in SchILD-NRW existieren (anhand von Nachname, Vorname und Geburtsdatum), so wird diese Datei beim Import nicht zwingend benötigt. Existieren die Schüler dagegen noch nicht, so muss diese Datei vorhanden sein. Siehe auch: https://wiki.svws.nrw.de/mediawiki/index.php?title=Schnittstellenbeschreibung",
-        new List<string> { "Nachname", "Vorname", "Geburtsdatum", "Geschlecht", "Status", "PLZ", "Ort", "Straße", "Aussiedler", "1.Staatsang.| Konfession", "StatistikKrz Konfession", "Aufnahmedatum", "Abmeldedatum Religionsunterricht", "Anmeldedatum Religionsunterricht", "Schulpflicht erf.| Reform - Pädagogik", "Nr.Stammschule", "Jahr", "Abschnitt", "Jahrgang", "Klasse", "Schulgliederung", "OrgForm", "Klassenart", "Fachklasse", "Noch frei", "Verpflichtung Sprachförderkurs", "Teilnahme Sprachförderkurs", "Einschulungsjahr", "Übergangsempf.JG5", "Jahr Wechsel S1", "1.Schulform S1", "Jahr Wechsel S2", "Förderschwerpunkt", "2.Förderschwerpunkt", "Schwerstbehinderung", "Autist", "LS Schulnr.| LS Schulform", "Herkunft", "LS Entlassdatum", "LS Jahrgang", "LS Versetzung", "LS Reformpädagogik", "LS Gliederung", "LS Fachklasse", "LS Abschluss", "Abschluss", "Schulnr.neue Schule", "Zuzugsjahr", "Geburtsland Schüler", "Geburtsland Mutter", "Geburtsland Vater", "Verkehrssprache", "Dauer Kindergartenbesuch" },
-        new Schülers()));
+        //m.Add(
+        //new Menüeintrag(
+        //"Schuelerbasisdaten.dat erzeugen",
+        //"SchuelerBasisdaten",
+        //@"ImportFürSchild\SchuelerBasisdaten.dat",
+        //@"Beschreibung: Enthält die Basis-Stammdaten der Schüler, insbesondere solche, die für die Statistik relevant sind. Wenn die in den Dateien SchuelerZusatzdaten.dat, SchuelerLernabschnittsdaten.dat, SchuelerLeistungsdaten.dat, SchuelerSprachenfolgen.dat, SchuelerAbitur.dat, SchuelerTelefonnummern.dat, SchuelerErzieher.dat, SchuelerMerkmale.dat, SchuelerAdressen.dat enthaltenen Schüler schon in SchILD-NRW existieren (anhand von Nachname, Vorname und Geburtsdatum), so wird diese Datei beim Import nicht zwingend benötigt. Existieren die Schüler dagegen noch nicht, so muss diese Datei vorhanden sein. Siehe auch: https://wiki.svws.nrw.de/mediawiki/index.php?title=Schnittstellenbeschreibung",
+        //new List<string> { "Nachname", "Vorname", "Geburtsdatum", "Geschlecht", "Status", "PLZ", "Ort", "Straße", "Aussiedler", "1.Staatsang.| Konfession", "StatistikKrz Konfession", "Aufnahmedatum", "Abmeldedatum Religionsunterricht", "Anmeldedatum Religionsunterricht", "Schulpflicht erf.| Reform - Pädagogik", "Nr.Stammschule", "Jahr", "Abschnitt", "Jahrgang", "Klasse", "Schulgliederung", "OrgForm", "Klassenart", "Fachklasse", "Noch frei", "Verpflichtung Sprachförderkurs", "Teilnahme Sprachförderkurs", "Einschulungsjahr", "Übergangsempf.JG5", "Jahr Wechsel S1", "1.Schulform S1", "Jahr Wechsel S2", "Förderschwerpunkt", "2.Förderschwerpunkt", "Schwerstbehinderung", "Autist", "LS Schulnr.| LS Schulform", "Herkunft", "LS Entlassdatum", "LS Jahrgang", "LS Versetzung", "LS Reformpädagogik", "LS Gliederung", "LS Fachklasse", "LS Abschluss", "Abschluss", "Schulnr.neue Schule", "Zuzugsjahr", "Geburtsland Schüler", "Geburtsland Mutter", "Geburtsland Vater", "Verkehrssprache", "Dauer Kindergartenbesuch" },
+        //new Schülers()));
 
-        
+
 
 
 
@@ -110,8 +111,88 @@ public class Menü : List<Menüeintrag>
         //    )
         //);
 
-        this.AddRange(m.OrderBy(c => c.Titel).ToList());
+        //this.AddRange(m.OrderBy(c => c.Titel).ToList());
     }
 
-    
+    internal Datei Display(List<Menüeintrag> menüeintrags)
+    {
+        this.AddRange(menüeintrags.Where(x=>x != null));
+
+        var configuration = new ConfigurationBuilder().AddJsonFile("appSettings.json", optional: false, reloadOnChange: true).Build();
+
+        Console.WriteLine("");
+        Console.WriteLine("  Bitte auswählen:");
+        Console.WriteLine("");
+
+        Auswahl = Convert.ToInt32(configuration["Auswahl"]);
+
+        for (int i = 0; i < this.Where(x => !string.IsNullOrEmpty(x.Titel)).Count(); i++)
+        {
+            Console.WriteLine(" " + (i + 1).ToString().PadLeft(3) + ". " + this[i].Titel.PadRight(13));
+        }
+
+        bool wiederhole = true;
+        do
+        {
+            Console.WriteLine("");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write("    Ihre Auswahl [" + Auswahl + "] : ");
+            Console.ResetColor();
+            var eingabe = Console.ReadLine();
+
+            if (eingabe == "ö")
+            {
+                Global.OpenCurrentFolder();
+                wiederhole = true;
+                continue;
+            }
+            if (eingabe == "x")
+            {
+                Global.OpenWebseite("");
+                wiederhole = true;
+                continue;
+            }
+            if (eingabe == "" && Auswahl.ToString() != "")
+            {
+                eingabe = Auswahl.ToString();
+            }
+
+            int nummer = 0;
+
+            if (int.TryParse(eingabe, out nummer))
+            {
+                // Überprüfen, ob die Zahl im gültigen Bereich liegt
+                if (nummer >= 1 && nummer <= this.Count)
+                {
+                    Auswahl = nummer;
+                    Console.WriteLine($"     Sie haben die Zahl {Auswahl} eingegeben.");
+                    Global.Speichern("Auswahl", Auswahl.ToString());
+                    wiederhole = false;
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("     Die Zahl muss zwischen 1 und " + this.Count + " liegen. Bitte versuchen Sie es erneut.");
+                    Console.ResetColor();
+                    wiederhole = true;
+                    continue;
+                }
+            }
+            else
+            {
+                if (!(eingabe == "" && Auswahl >= 1 && Auswahl <= this.Count))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("     Die Zahl muss zwischen 1 und " + this.Count + " liegen. Bitte versuchen Sie es erneut.");
+                    Console.ResetColor();
+                }
+            }
+
+        } while (wiederhole);
+
+        Global.DisplayHeader();
+        Global.DisplayHeader(this[Auswahl - 1].Titel, ' ');
+        Global.DisplayCenteredBox(this[Auswahl - 1].Beschreibung, 90);
+        return new Datei(this[Auswahl - 1].DateiPfad, this[Auswahl - 1].Titel, this[Auswahl - 1].Kopfzeile);
+    }
 }

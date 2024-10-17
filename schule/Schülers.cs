@@ -8,6 +8,7 @@ using System.Text;
 using System.Xml.Linq;
 using System.Xml.Schema;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Linq;
 
 public class Schülers : List<Schueler>
 {
@@ -340,15 +341,15 @@ public class Schülers : List<Schueler>
 
     public Schülers(Dateien dateien, Aliasse aliasse)
     {
-        try
-        {
+        //try
+        //{
             foreach (var item in dateien[0].Zeilen)
             {
                 this.Add(new Schueler());
             }
 
             List<string> schuelerEigenschaften = GetKopfzeile();
-            List<string> kopfzeileImportdatei = dateien[0].Zeilen.Where(x => x.IstKopfzeile).FirstOrDefault().Zellen.ToList();
+        List<string> kopfzeileImportdatei = new List<string>();// dateien[0].Zeilen;
             
             // Alle Eigenschaften der Schüler werden durchlaufen...
 
@@ -366,7 +367,7 @@ public class Schülers : List<Schueler>
                         for (int z = 0; z < dateien[0].Zeilen.Count(); z++)
                         {
                             string nameDerEigenschaft = schuelerEigenschaften[i];
-                            string wertDerEigenschaft = dateien[0].Zeilen[z].Zellen[y];
+                            string wertDerEigenschaft = "";
                             
                             var propertyInfo = typeof(Schueler).GetProperty(nameDerEigenschaft);
 
@@ -378,15 +379,47 @@ public class Schülers : List<Schueler>
                     }
                 }
             }
-        }
-        catch (Exception ex)
+        //}
+        //catch (Exception ex)
+        //{
+        //    Fehler = ex;
+        //}
+        //finally
+        //{
+        //    Global.ZeileSchreiben(0, "Schüler*innen-Objekte angelegt", this.Count().ToString(), Fehler);
+        //}
+    }
+
+    public Schülers(SchuelerBasisdaten schuelerBasisdaten)
+    {
+        foreach (var schuelerBasisdatum in schuelerBasisdaten)
         {
-            Fehler = ex;
+            Schueler schueler = new Schueler();
+            schueler.Nachname = schuelerBasisdatum.Nachname;
+            schueler.Vorname = schuelerBasisdatum.Vorname;
+            schueler.Klasse = schuelerBasisdatum.Klasse;
+            schueler.Geburtsdatum = schuelerBasisdatum.Geburtsdatum;
+            schueler.Straße = schuelerBasisdatum.Straße;
+            
+            this.Add(schueler);
         }
-        finally
+        Global.ZeileSchreiben(0, "Schüler*innen aus schuelerBasisdaten", this.Count().ToString(), Fehler);
+    }
+
+    public Schülers(Students students)
+    {
+        foreach (var student in students)
         {
-            Global.ZeileSchreiben(0, "Schüler*innen-Objekte angelegt", this.Count().ToString(), Fehler);
+            Schueler schueler = new Schueler();
+            schueler.Nachname = student.longName;
+            schueler.Vorname = student.foreName;
+            schueler.Klasse = student.klasseName;
+            schueler.Straße = student.addressStreet;
+            schueler.Plz = student.addressPostCode;
+            schueler.Wohnort = student.addressCity;
+            this.Add(schueler);
         }
+        Global.ZeileSchreiben(0, "Schüler*innen aus students_", this.Count().ToString(), Fehler);
     }
 
     private List<string> GetKopfzeile()
@@ -399,64 +432,64 @@ public class Schülers : List<Schueler>
         return kopfzeileSchuelers;
     }
 
-    internal Datei Leistungsdaten(Datei exportLessons, Datei studentgroupStudents, Datei absencePerStudent, Datei marksPerLesson, string[] kopfzeile, string dateiPfad)
-    {
-        Datei schuelerleistungsdaten = new Datei();
-        schuelerleistungsdaten.DateiPfad = dateiPfad;
-        //schuelerleistungsdaten.Kopfzeile = kopfzeile;
+    //internal Datei Leistungsdaten(Datei exportLessons, Datei studentgroupStudents, Datei absencePerStudent, Datei marksPerLesson, string[] kopfzeile, string dateiPfad)
+    //{
+    //    Datei schuelerleistungsdaten = new Datei();
+    //    schuelerleistungsdaten.DateiPfad = dateiPfad;
+    //    //schuelerleistungsdaten.Kopfzeile = kopfzeile;
 
-        try
-        {
-            foreach (var schueler in this)
-            {
-                schueler.GetFehlstd(absencePerStudent, AktSj, Abschnitt);
-                schueler.GetUnentFehlstd(absencePerStudent, AktSj, Abschnitt);
+    //    try
+    //    {
+    //        foreach (var schueler in this)
+    //        {
+    //            schueler.GetFehlstd(absencePerStudent, AktSj, Abschnitt);
+    //            schueler.GetUnentFehlstd(absencePerStudent, AktSj, Abschnitt);
 
-                //foreach (var zeile in (from zeile in exportLessons.Zeilen
-                //                       where zeile[Array.IndexOf(exportLessons.Kopfzeile, "klassen")].Split('~').Contains(schueler.Klasse)
-                //                       select zeile).ToList())
-                //{
-                //    string note = schueler.GetNote(Array.IndexOf(marksPerLesson.Kopfzeile, "Gesamtnote"), marksPerLesson);
+    //            //foreach (var zeile in (from zeile in exportLessons.Zeilen
+    //            //                       where zeile[Array.IndexOf(exportLessons.Kopfzeile, "klassen")].Split('~').Contains(schueler.Klasse)
+    //            //                       select zeile).ToList())
+    //            //{
+    //            //    string note = schueler.GetNote(Array.IndexOf(marksPerLesson.Kopfzeile, "Gesamtnote"), marksPerLesson);
 
-                //    if (zeile[Array.IndexOf(exportLessons.Kopfzeile, "klassen")].Contains(schueler.Klasse))
-                //    {
-                //        if (zeile[Array.IndexOf(exportLessons.Kopfzeile, "studentgroup")] == "") // Klassenunterricht werden immer hinzugefügt
-                //        {
-                //            schuelerleistungsdaten.Zeilen.Add(new List<string>
-                //            {
-                //                schueler.Nachname,
-                //                schueler.Vorname,
-                //                schueler.Geburtsdatum,
-                //                AktSj[0].ToString(),
-                //                Abschnitt.ToString(),
-                //                zeile[Array.IndexOf(exportLessons.Kopfzeile, "subject")],
-                //                zeile[Array.IndexOf(exportLessons.Kopfzeile, "teacher")],
-                //                "PUK", // Pflichtunterricht im Klassenverband
-                //                "", // Kein Kursname
-                //                note,
-                //                zeile[Array.IndexOf(exportLessons.Kopfzeile, "periods")],
-                //                "", // ExterneSchulnr
-                //                "", // Zusatzkraft
-                //                "", // WochenstdZK
-                //                "", // Jahrgang
-                //                "", // Jahrgänge
-                //                schueler.Fehlstd, // Fehlstd
-                //                schueler.UnentschFehlstd // UnentschFehlstd
-                //            });
-                //        }
-                //    }
-                //}
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.ToString());
-            Console.ReadKey();
-        }
-        return schuelerleistungsdaten;
-    }
+    //            //    if (zeile[Array.IndexOf(exportLessons.Kopfzeile, "klassen")].Contains(schueler.Klasse))
+    //            //    {
+    //            //        if (zeile[Array.IndexOf(exportLessons.Kopfzeile, "studentgroup")] == "") // Klassenunterricht werden immer hinzugefügt
+    //            //        {
+    //            //            schuelerleistungsdaten.Zeilen.Add(new List<string>
+    //            //            {
+    //            //                schueler.Nachname,
+    //            //                schueler.Vorname,
+    //            //                schueler.Geburtsdatum,
+    //            //                AktSj[0].ToString(),
+    //            //                Abschnitt.ToString(),
+    //            //                zeile[Array.IndexOf(exportLessons.Kopfzeile, "subject")],
+    //            //                zeile[Array.IndexOf(exportLessons.Kopfzeile, "teacher")],
+    //            //                "PUK", // Pflichtunterricht im Klassenverband
+    //            //                "", // Kein Kursname
+    //            //                note,
+    //            //                zeile[Array.IndexOf(exportLessons.Kopfzeile, "periods")],
+    //            //                "", // ExterneSchulnr
+    //            //                "", // Zusatzkraft
+    //            //                "", // WochenstdZK
+    //            //                "", // Jahrgang
+    //            //                "", // Jahrgänge
+    //            //                schueler.Fehlstd, // Fehlstd
+    //            //                schueler.UnentschFehlstd // UnentschFehlstd
+    //            //            });
+    //            //        }
+    //            //    }
+    //            //}
+    //        }
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        Console.WriteLine(ex.ToString());
+    //        Console.ReadKey();
+    //    }
+    //    return schuelerleistungsdaten;
+    //}
 
-    public Schülers GetIntessierendeSchuelers(Datei exportdatei)
+    public Schülers GetIntessierendeSchuelers(Datei zielDatei)
     {
         var configuration = new ConfigurationBuilder().AddJsonFile("appSettings.json", optional: false, reloadOnChange: true).Build();
         var klassen = configuration["Klassen"];
@@ -546,7 +579,7 @@ public class Schülers : List<Schueler>
         finally
         {
             Global.DisplayHeader();
-            Global.DisplayHeader(exportdatei.Titel, '-');
+            Global.DisplayHeader(zielDatei.Titel, '-');
             Console.WriteLine("");
             Global.ZeileSchreiben(0, linkeSeite, rechteSeite, Fehler);
             linkeSeite = (string.Join(",", InteressierendeKlassen.Order()));

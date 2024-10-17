@@ -5,48 +5,80 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Resources;
 using System.Text;
+using static Global;
 
-Global.Delimiter = ['|', ';', ',', '\t'];
-Global.ReferenzMerkmale = new List<string>() { "Name", "Nachname", "Vorname", "Klasse", "Geburtsdatum" };
 Global.DisplayHeader();
-Aliasse aliasse = new Aliasse("Aliasse.xlsx");
-Dateien dateien = new Dateien();
+
+using (var reader = new StreamReader("Alias.txt")) { GlobalCsvMappings.LoadMappingsFromFile("Alias.txt"); }
+
+AbsencePerStudents absencePerStudents = new AbsencePerStudents(@"ExportAusWebuntis\AbsencePerStudent", "*.csv", "\t");
+Students students = new Students(@"ExportAusWebuntis\Student_", "*.csv", "\t");
+ExportLessons exportLessons = new ExportLessons(@"ExportAusWebuntis\ExportLessons", "*.csv", "\t");
+MarksPerLessons marksPerLessons = new MarksPerLessons(@"ExportAusWebuntis\MarksPerLesson", "*.csv", "\t");
+StudentgroupStudents studentgroupStudents = new StudentgroupStudents(@"ExportAusWebuntis\StudentgroupStudents", "*.csv", "\t");
+Faecher faecher = new Faecher(@"ExportAusSchild\Faecher","*.dat");
+SchuelerLeistungsdaten schuelerLeistungsdaten = new SchuelerLeistungsdaten(@"ExportAusSchild\SchuelerLeistungsdaten", "*.dat");
+SchuelerLernabschnittsdaten schuelerLernabschnittsdaten = new SchuelerLernabschnittsdaten(@"ExportAusSchild\SchuelerLernabschnittsdaten", "*.dat");
+SchuelerTeilleistungen schuelerTeilleistungen = new SchuelerTeilleistungen(@"ExportAusSchild\SchuelerTeilleistungen", "*.dat");
+SchuelerBasisdaten schuelerBasisdaten = new SchuelerBasisdaten(@"ExportAusSchild\SchuelerBasisdaten", "*.dat");
+Sims sims = new Sims(@"ExportAusAtlantis\sim.csv", "*.csv", ";");
 
 do
 {
-    Datei zielDatei = dateien.DisplayMenu(aliasse);
-    Dateien InteressierendeDateien = new Dateien(dateien, zielDatei.BenötigteDateien, aliasse);
-
-    Dateien sDateien = dateien.Interessierende(new string[] { @"ExportAusWebuntis\Student_" });    
-    Schülers schuelers = new Schülers(sDateien, aliasse);
-        
+    // Schüler generieren
+    Schülers schuelers = new Schülers(schuelerBasisdaten);
+    if (schuelers.Count == 0) { schuelers = new Schülers(students); }
+    
+    Datei zielDatei = new Menü().Display(new List<Menüeintrag>() 
+    {
+        schuelerBasisdaten.Menüeintrag(sims.Count()),
+        schuelerLeistungsdaten.Menüeintrag(schuelerBasisdaten.Count(), exportLessons.Count()),
+        schuelerTeilleistungen.Menüeintrag(schuelerBasisdaten.Count(), marksPerLessons.Count()),
+        schuelerBasisdaten.Menüeintrag(),
+    });
+    
     do
     {
-        Schülers interessierendeSchuelers = schuelers.GetIntessierendeSchuelers(zielDatei);
-        if (interessierendeSchuelers.Keine()) { break; }
-        InteressierendeDateien.InteressierendeZeilenFiltern(interessierendeSchuelers);
-                
-        object[] parameters = new object[] { InteressierendeDateien, interessierendeSchuelers };
+        Schülers iSuS = schuelers.GetIntessierendeSchuelers(zielDatei);
+        if (iSuS.Keine()) { break; }
+        var iKla = iSuS.Select(x => x.Klasse).Distinct().ToList();
+        var iSim = sims.Interessierende(iKla);
+        var iSba = schuelerBasisdaten.Interessierende(iKla);
+        var iExL = exportLessons.Interessierende(iKla);
+        var iApS = absencePerStudents.Interessierende(iKla);
+        var iMpL = marksPerLessons.Interessierende(iKla);
+        var iSgS = studentgroupStudents.Interessierende(iKla);
 
-        MethodInfo method = zielDatei.GetType().GetMethod(zielDatei.Funktionsname);
-        method?.Invoke(zielDatei, parameters);
+        // Alle Funktionen:
 
-        string vergleichsdateiDateiPfad = zielDatei.CheckFile();
+        if (zielDatei.DateiPfad.ToLower().Contains("basisdaten") && iSim.Count() > 0)
+            zielDatei.Zeilen.AddRange(sims.GetZeilen(iSuS));
+        
+        if (zielDatei.DateiPfad.ToLower().Contains("leistungsdaten") && iExL.Count() > 0)
+            zielDatei.Zeilen.AddRange(schuelerBasisdaten.GetZeilen(iApS, iSuS, iExL, iMpL, iSgS));
 
-        if (vergleichsdateiDateiPfad != null && vergleichsdateiDateiPfad.ToLower().Contains("export"))
-        {
-            Global.ZeileSchreiben(0, vergleichsdateiDateiPfad, "existiert", null);
+        //if (zielDatei.DateiPfad.ToLower().Contains("teilleistungen") && iMpL.Count() > 0)
+            //zielDatei.Zeilen = schuelerBasisdaten.GetZeilen(iExL, iMpL, iSgS);
 
-            Datei vergleichsdatei = new Datei(vergleichsdateiDateiPfad);
-            vergleichsdatei.Zeilen.Add(new Zeile(zielDatei.Zeilen.Where(x => x.IstKopfzeile).FirstOrDefault().Zellen, true));
-            vergleichsdatei.AddZeilen();
-                    
-            Global.ZeileSchreiben(0, vergleichsdateiDateiPfad, vergleichsdatei.Zeilen.Count().ToString(), null);
 
-            if(zielDatei.DateienVergleichen(vergleichsdatei)) { break; }                
-        }
+
+
+        // Dateien vergleichen
+        //string vergleichsdateiDateiPfad = zielDatei.CheckFile();
+
+        //if (vergleichsdateiDateiPfad != null && vergleichsdateiDateiPfad.ToLower().Contains("export"))
+        //{
+        //    Global.ZeileSchreiben(0, vergleichsdateiDateiPfad, "existiert", null);
+
+        //    Datei vergleichsdatei = new Datei();// new Datei(vergleichsdateiDateiPfad);            
+                                
+        //    Global.ZeileSchreiben(0, vergleichsdateiDateiPfad, vergleichsdatei.Zeilen.Count().ToString(), null);
+
+        //    if(zielDatei.DateienVergleichen(vergleichsdatei)) { break; }      
+        //}
 
         zielDatei.Erstellen();
+        
 
     } while (true);
     
