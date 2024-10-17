@@ -1,7 +1,6 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
-using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Wordprocessing;
-using DocumentFormat.OpenXml.Spreadsheet;
+﻿using static Global;
+using System.Diagnostics;
+using System.Text;
 
 public class Aliasse : List<string[]>
 {
@@ -12,45 +11,48 @@ public class Aliasse : List<string[]>
     {
         try
         {
-            // Überprüfen, ob die Datei existiert
             if (!File.Exists(filePath))
             {
-                Zeilen = GetVorgabewerte();
+                this.AddRange(GetVorgabewerte());
 
-                // Leere Excel-Datei erstellen
-                using (var workbook = new XLWorkbook())
+                string[] hinweise = new string[] 
                 {
-                    var worksheet = workbook.Worksheets.Add("Alias");
+                    "Die Alias-Datei wird erstellt, da sie nicht existiert.",
+                    "Die Datei sorgt dafür, dass Spalten richtig eigelesen werden, wenn sie ansonsten ungültige Zeichen enthalten.",
+                    "Die Datei kann händlisch ergänzt werden.",
+                    "Jede Spalte muss exakt drei Einträge enthalten."
+                };
 
-                    for (int i = 0; i < Zeilen.Count; i++)
+                Global.ZeileSchreiben(0, "Die Alias-Datei namens " + filePath + " wird erstellt", "ok", new Exception("ok"), hinweise);
+
+                using (FileStream fs = new FileStream(DateiPfad, FileMode.CreateNew))
+                {
+                    Encoding encoding = Encoding.UTF8;
+                    using (StreamWriter writer = new StreamWriter(fs, encoding))
                     {
-                        for (int j = 0; j < Zeilen[i].Length; j++)
+                        try
                         {
-                            worksheet.Cell(i + 1, j + 1).Value = Zeilen[i][j];
+                            foreach (var zeile in this)
+                            {   
+                                writer.WriteLine(String.Join(',', zeile));
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Fehler = ex;
+                        }
+                        finally
+                        {
+                            Global.ZeileSchreiben(0, "Aliasse", this.Count().ToString(), null);
                         }
                     }
-                    workbook.SaveAs(filePath);
                 }
-
-                string[] hinweise = new string[] { "Die Datei wird benötigt, um unterschiedliche Spaltenüberschriften aufeinander zu matchen.", "Öffnen Sie die Exceldatei, um alle Aliasse zu sichten", "Ergänzen Sie Aliasse, wenn Sie merken, dass Spalten in der Zieldatei ungewollt leer bleiben." };
-
-                Global.ZeileSchreiben(0, "Die Excel-Datei namens " + filePath + " wird erstellt", "ok", new Exception("ok"), hinweise);
             }
 
             // Daten aus der Excel-Datei einlesen
-            using (var workbook = new XLWorkbook(filePath))
-            {
-                var worksheet = workbook.Worksheet(1);
-                var rows = worksheet.RowsUsed();
 
-                foreach (var row in rows)
-                {
-                    var rowData = row.Cells().Select(cell => cell.Value.ToString().ToLower()).ToArray();
-                    this.Add(rowData);
-                }
+            using (var reader = new StreamReader(filePath)) { GlobalCsvMappings.LoadMappingsFromFile(filePath); }
 
-                Global.ZeileSchreiben(0, "Aliasse aus der Excel-Datei eingelesen", "ok", null);
-            }
         }
         catch (Exception ex)
         {
@@ -58,183 +60,105 @@ public class Aliasse : List<string[]>
         }
         finally
         {
-            Global.ZeileSchreiben(0, "Aliasse", this.Count().ToString(), null);
+            
         }
     }
 
     private List<string[]> GetVorgabewerte()
     {
-        List<string[]> vorgabewerte =
-        [
-            new[] { "1. tel.-nr.", "schüler: telefon", "address.phone", "Telefon", "Telefonnr." },
-        new[] { "1.schulform s1","1.schulform s1" },
-        new[] { "2. tel.-nr.", "schüler: telefon 2", "address.mobile", "mobil" },
-        new[] { "2.förderschwerpunkt", "63 förderschwerpunkt 2", "2. förderschwerpunkt" },
-        new[] { "abmeldedatum religionsunterricht" },
-        new[] { "abschluss", "Art des Abschlusses an eigener Schule bei Verlassen der eigenen Schule" },
-        new[] { "abschnitt" },
-        new[] { "adressart" },
-        new[] { "anmeldedatum religionsunterricht" },
-        new[] { "aussiedler" },
-        new[] { "austritt", "austrittsdatum", "exitDate" },
-        new[] { "autist" },
-        new[] { "68 adressmerkmal" },
-        new[] { "24 ausbildort" },
-        new[] { "22 aufnahmedatum", "entrydate", "aufnahmedatum", "eintrittsdatum" },
-        new[] { "9 aktjahrgang" },
-        new[] { "62 bkazvo" },
-        new[] { "65 berufsabschluss" },
-        new[] { "61 betreuung" },
-        new[] { "25 betriebsort" },
-        new[] { "bemerkung" },
-        new[] { "betreuer abteilung" },
-        new[] { "betreuer anrede" },
-        new[] { "betreuer e-mail" },
-        new[] { "betreuer nachname" },
-        new[] { "betreuer tel.-nr." },
-        new[] { "betreuer vorname" },
-        new[] { "1 bezugsjahr" },
-        new[] { "datum", "date" },
-        new[] { "dauer kindergartenbesuch" },
-        new[] { "e-mail", "schüler: e-mail-adresse", "address.email", "mail", "email", "mailadresse" },
-        new[] { "einschulungsjahr", "51 jahr einschulung" },
-        new[] { "45 entldatum", "exitdate" },
-        new[] { "56 elternteil zugezogen" },
-        new[] { "58 einschulungsart" },
-        new[] { "erzb. 2: tel 1" },
-        new[] { "erzb. 2: tel 2" },
-        new[] { "erzb. 2: straße" },
-        new[] { "erzb. 2: sorgeberechtig (j/n)" },
-        new[] { "erzb. 2: postleitzahl" },
-        new[] { "erzb. 2: ort" },
-        new[] { "erzb. 2: e-mail" },
-        new[] { "erzb. 2: anrede" },
-        new[] { "erzb. 1: typ adresse (auflösung)" },
-        new[] { "erzb. 1: typ adresse" },
-        new[] { "erzb. 1: tel 1" },
-        new[] { "erzb. 1: tel 2" },
-        new[] { "erzb. 1: straße" },
-        new[] { "erzb. 1: sorgeberechtig (j/n)" },
-        new[] { "erzb. 1: postleitzahl" },
-        new[] { "erzb. 1: ort" },
-        new[] { "erzb. 1: e-mail" },
-        new[] { "erzb. 1: anrede" },
-        new[] { "erzb. 1: 2. staatsangehörigkeit" },
-        new[] { "erzb. 1: 1. staatsangehörigkeit" },
-        new[] { "erzb. 1: geburtsdatum" },
-        new[] { "erzb. 1: anrede" },
-        new[] { "erzb. 2: vorname" },
-        new[] { "erzb. 2: nachname" },
-        new[] { "erzb. 1: vorname" },
-        new[] { "erzb. 1: nachname" },
-        new[] { "fach", "subject" },
-        new[] { "fehlstunden", "Fehlstd" },
-        new[] { "UnentschFehlstd", "Unentsch.Fehlstd." },
-        new[] { "fachklasse", "6 fachklasse" },
-        new[] { "10 foerderschwerp", "förderschwerpunkt" },        
-        new[] { "59 gs-empfehlung", "Übergangsempf. JG5" },
-        new[] { "16 gebdat", "schüler: geburtsdatum (yyyy-mm-dd)", "birthdate", "geburtsdatum" },
-        new[] { "geburtsdatum", "birthday", "birthdate" },
-        new[] { "geburtsland mutter", "54 geb.land (mutter)" },
-        new[] { "geburtsland schüler" },
-        new[] { "geburtsland vater", "55 geb.land (vater)" },
-        new[] { "geburtsort" },
-        new[] { "geschlecht", "gender", "17 geschlecht" },
-        new[] { "5 gliederung" },
-        new[] { "herkunft" },
-        new[] { "69 internatsplatz" },
-        new[] { "jahr", "schüler: vorgang schuljahr" },
-        new[] { "jahr wechsel s1" },
-        new[] { "jahr wechsel s2" },
-        new[] { "jahrgang" },
-        new[] { "13 jva" },
-        new[] { "50 jahr zuzug" },
-        new[] { "52 jahr schulwechsel" },
-        new[] { "7 klassenart" },
-        new[] { "70 koopklasse" },
-        new[] { "konfession" },
-        new[] { "klasse", "4 klasse", "klasse: klassenbezeichnung", "klasse.name" },
-        new[] { "klassenart" },
-        new[] { "lehrkraft", "benutzer" },
-        new[] { "23 labk" },
-        new[] { "26 lsschulform", "ls schulform" },
-        new[] { "27 lsschulnummer", "ls schulnr." },
-        new[] { "28 lsgliederung" },
-        new[] { "29 lsfachklasse" },
-        new[] { "30 lsklassenart" },
-        new[] { "31 lsreformpdg" },
-        new[] { "32 lsschulentl" },
-        new[] { "33 lsjahrgang" },
-        new[] { "34 lsqual" },
-        new[] { "35 lsversetz" },
-        new[] { "ls abschluss" },
-        new[] { "ls entlassdatum" },
-        new[] { "ls fachklasse" },
-        new[] { "ls gliederung" },
-        new[] { "ls jahrgang" },
-        new[] { "ls reformpädagogik" },        
-        new[] { "ls versetzung" },
-        new[] { "60 massnahmetraeger" },
-        new[] { "nachname", "surname", "schüler: nachname", "longname", "familienname" },
-        new[] { "name 1" },
-        new[] { "name2" },
-        new[] { "noch frei" },
-        new[] { "note", "gesamtnote" },
-        new[] { "nr.stammschule" },
-        new[] { "8 orgform", "orgform" },
-        new[] { "ort", "15. ort", "schüler: ort", "address.city", "Wohnort" },
-        new[] { "schüler: ortsteil" },
-        new[] { "66 produktname" },
-        new[] { "67 produktversion" },
-        new[] { "plz", "14 plz", "schüler: plz", "address.postcode" },
-        new[] { "prüfungsart", "teilleistung" },
-        new[] { "reform-pädagogik", "reform - pädagogik", "12 reformpdg" },
-        new[] { "19 religion" },
-        new[] { "20 relianmeldung" },
-        new[] { "21 reliabmeldung" },
-        new[] { "schulgliederung" },
-        new[] { "schulpflicht erf.", "47 schulpflichterf" },
-        new[] { "48 schulwechselform" },
-        new[] { "11 schwerstbehindert", "Schwerstbehinderung" },
-        new[] { "18 staatsang", "1.staatsang.", "schüler: staat (auflösung)", "1. staatsang." },
-        new[] { "statistikkrz konfession" },
-        new[] { "status", "2 status" },
-        new[] { "straße", "schüler: straße", "address.street" },
-        new[] { "schüler berufswechsel" },
-        new[] { "schüler le. jahr da" },
-        new[] { "teilnahme sprachförderkurs" },
-        new[] { "übergangsempf.jg5" },
-        new[] { "verkehrssprache" },
-        new[] { "verpflichtung sprachförderkurs" },
-        new[] { "vertragsbeginn" },
-        new[] { "vertragsende" },
-        new[] { "49 versetzung" },
-        new[] { "36 voklasse" },
-        new[] { "37 vogliederung" },
-        new[] { "38 vofachklasse" },
-        new[] { "39 voorgform" },
-        new[] { "40 voklassenart" },
-        new[] { "41 vojahrgang" },
-        new[] { "42 vofoerderschwerp" },
-        new[] { "64 voförderschwerpunkt 2" },
-        new[] { "43 voschwerstbehindert" },
-        new[] { "44 voreformpdg" },
-        new[] { "57 verkehrssprache" },
-        new[] { "vorjahr c05 aktjahr c06" },
-        new[] { "vorname", "firstname", "givenname", "schüler: rufname", "schüler: vorname", "forename" },
-        new[] { "zuzugsjahr" },
-        new[] { "46 zeugnis" },
-        new[] { "53 zugezogen" },
-        new[] { "externKey" },
-        new[] { "medicalReportDuty" },
-        new[] { "schulpflicht" },
-        new[] { "majority" },
-        new[] { "name" },
-        new[] { "Schulnummer der aufnehmenden Schule", "Schulnr.neue Schule", "Schulnr. neue Schule" }
-
-        // externKey,medicalReportDuty,schulpflicht,majority,address.phone
-
-        ];
+        List<string[]> vorgabewerte = new List<string[]>
+    {
+        new[] { "Fehlmin","Fehlmin.","Fehlmin." },
+        new[] { "Name","Schüler*innen","Schüler" },
+        new[] { "ExterneId","Externe Id","Externe Id" },
+        new[] { "Fehlstd","Fehlstd.","Fehlst" },
+        new[] { "Abwesenheitzaehlt","Abwesenheit zählt","Abwesenheit zählt" },
+        new[] { "addressEmail","address.email","address.email" },
+        new[] { "addressMobile","address.mobile","address.mobile" },
+        new[] { "addressPhone","address.phone","address.phone" },
+        new[] { "addressCity","address.city","address.city" },
+        new[] { "addressPostCode","address.postCode","address.postCode" },
+        new[] { "addressStreet","address.street","address.street" },
+        new[] { "schluesselExtern","Schlüssel (extern)","Schlüssel (extern)" },
+        new[] { "studentgroupName","studentgroup.name","studentgroup.name" },
+        new[] { "Familienname","Familienname","Familienname" },
+        new[] { "Austritt","Austritt","Austritt" },
+        new[] { "klasseName","klasse.name","klasse.name" },
+        new[] { "Vorname","Vorname","Vorname" },
+        new[] { "SchuelerLeJahrDa","SchuelerLeJahrDa","Schüler le. Jahr da" },
+        new[] { "SchuelerBerufswechsel","SchuelerBerufswechsel","Schüler Berufswechsel" },
+        new[] { "VorjahrC05AktjahrC06","VorjahrC05AktjahrC06","Vorjahr C05 Aktjahr C06" },
+        new[] { "Bezugsjahr1","Bezugsjahr1","1 Bezugsjahr" },
+        new[] { "Status2","Status2","2 Status" },
+        new[] { "Lfdnr3","Lfdnr3","3 Lfdnr" },
+        new[] { "Klasse4","Klasse4","4 Klasse" },
+        new[] { "Gliederung5","Gliederung5","5 Gliederung" },
+        new[] { "Fachklasse6","Fachklasse6","6 Fachklasse" },
+        new[] { "Klassenart7","Klassenart7","7 Klassenart" },
+        new[] { "Orgform8","Orgform8","8 Orgform" },
+        new[] { "Aktjahrgang9","Aktjahrgang9","9 Aktjahrgang" },
+        new[] { "Foerderschwerp10","Foerderschwerp10","10 Foerderschwerp" },
+        new[] { "Schwerstbehindert11","Schwerstbehindert11","11 Schwerstbehindert" },
+        new[] { "Reformpdg12","Reformpdg12","12 Reformpdg" },
+        new[] { "Jva13","Jva13","13 Jva" },
+        new[] { "Plz14","Plz14","14 Plz" },
+        new[] { "Ort15","Ort15","15. Ort" },
+        new[] { "Gebdat16","Gebdat16","16 Gebdat" },
+        new[] { "Geschlecht17","Geschlecht17","17 Geschlecht" },
+        new[] { "Staatsang18","Staatsang18","18 Staatsang" },
+        new[] { "Religion19","Religion19","19 Religion" },
+        new[] { "Relianmeldung20","Relianmeldung20","20 Relianmeldung" },
+        new[] { "Reliabmeldung21","Reliabmeldung21","21 Reliabmeldung" },
+        new[] { "Aufnahmedatum22","Aufnahmedatum22","22 Aufnahmedatum" },
+        new[] { "Labk23","Labk23","23 Labk" },
+        new[] { "Ausbildort24","Ausbildort24","24 Ausbildort" },
+        new[] { "Betriebsort25","Betriebsort25","25 Betriebsort" },
+        new[] { "Lsschulform26","Lsschulform26","26 LSSchulform" },
+        new[] { "Lsschulnummer27","Lsschulnummer27","27 Lsschulnummer" },
+        new[] { "Lsgliederung28","Lsgliederung28","28 LSGliederung" },
+        new[] { "Lsfacheklasse29","Lsfacheklasse29","29 LSFachklasse" },
+        new[] { "Lsklassenart30","Lsklassenart30","30 Lsklassenart" },
+        new[] { "Lsreformpdg31","Lsreformpdg31","31 Lsreformpdg" },
+        new[] { "Lsschulentl32","Lsschulentl32","32 LSSschulentl" },
+        new[] { "Lsjahrgang33","Lsjahrgang33","33 LSJahrgang" },
+        new[] { "Lsqual34","Lsqual34","34 LSQual" },
+        new[] { "Lsversetz35","Lsversetz35","35 Lsversetz" },
+        new[] { "Voklasse36","Voklasse36","36 VOKlasse" },
+        new[] { "Vogliederung37","Vogliederung37","37 VOGliederung" },
+        new[] { "Vofachklasse38","Vofachklasse38","38 VOFachklasse" },
+        new[] { "Voorgform39","Voorgform39","39 VOOrgform" },
+        new[] { "Voklassenart40","Voklassenart40","40 VOKlassenart" },
+        new[] { "Vojahrgang41","Vojahrgang41","41 VOJahrgang" },
+        new[] { "Vofoerderschwerp42","Vofoerderschwerp42","42 VOFoerderschwerp" },
+        new[] { "Voschwerstbehindert43","Voschwerstbehindert43","43 VOSchwerstbehindert" },
+        new[] { "Voreformpdg44","Voreformpdg44","44 VOReformpdg" },
+        new[] { "Entldatum45","Entldatum45","45 EntlDatum" },
+        new[] { "Zeugnis46","Zeugnis46","46 Zeugnis" },
+        new[] { "Schulpflichterf47","Schulpflichterf47","47 Schulpflichterf" },
+        new[] { "Schulwechselform48","Schulwechselform48","48 Schulwechselform" },
+        new[] { "Versetzung49","Versetzung49","49 Versetzung" },
+        new[] { "JahrZuzug50","JahrZuzug50","50 Jahr Zuzug" },
+        new[] { "JahrEinschulung51","JahrEinschulung51","51 Jahr Einschulung" },
+        new[] { "JahrSchulwechsel52","JahrSchulwechsel52","52 Jahr Schulwechsel" },
+        new[] { "Zugezogen53","Zugezogen53","53 zugezogen" },
+        new[] { "GebLandMutter54","GebLandMutter54","54 Geb.Land (Mutter)" },
+        new[] { "GebLandVater55","GebLandVater55","55 Geb.Land (Vater)" },
+        new[] { "ElternteilZugezogen56","ElternteilZugezogen56","56 Elternteil zugezogen" },
+        new[] { "Verkehrssprache57","Verkehrssprache57","57 Verkehrssprache" },
+        new[] { "Einschulungsart58","Einschulungsart58","58 Einschulungsart" },
+        new[] { "GsEmpfehlung59","GsEmpfehlung59","59 GS-Empfehlung" },
+        new[] { "Massnahmetraeger60","Massnahmetraeger60","60 Massnahmetraeger" },
+        new[] { "Betreuung61","Betreuung61","61 Betreuung" },
+        new[] { "Bkazvo62","Bkazvo62","62 BKAZVO" },
+        new[] { "Foerderschwerpunkt263","Foerderschwerpunkt263","63 Förderschwerpunkt 2" },
+        new[] { "Vofoerderschwerpunkt264","Vofoerderschwerpunkt264","64 VOFörderschwerpunkt 2" },
+        new[] { "Berufsabschluss65","Berufsabschluss65","65 Berufsabschluss" },
+        new[] { "Produktname66","Produktname66","66 Produktname" },
+        new[] { "Produktversion67","Produktversion67","67 Produktversion" },
+        new[] { "Adressmerkmal68","Adressmerkmal68","68 Adressmerkmal" },
+        new[] { "Internatsplatz69","Internatsplatz69","69 Internatsplatz" },
+        new[] { "Koopklasse70","Koopklasse70","70 Koopklasse" }
+    };
         return vorgabewerte;
     }
 }

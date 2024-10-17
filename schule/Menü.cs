@@ -11,112 +11,18 @@ public class Menü : List<Menüeintrag>
 {
     public int Eingabe { get; set; }
     public int Auswahl { get; private set; }
+    public string DateiPfad { get; private set; }
+    public string Titel { get; private set; }
+    public List<string> Kopfzeile { get; private set; }
 
     public Menü()
     {
-        //Eingabe = 0;
-        //var m = new List<Menüeintrag>();
-
-        //m.Add(
-        //new Menüeintrag(
-        //"SchuelerTeilleistungen.dat erzeugen",
-        //"SchuelerTeilleistungen",
-        //@"ImportFürSchild\SchuelerTeilleistungen.dat",
-        //@"Beschreibung: Enthält die Teilleistungsdaten (Teilleistung und Noten) eines Lernabschnittes (=Halbjahr oder Quartal) der Schüler. ",
-        //new List<string> { "Nachname", "Vorname", "Geburtsdatum", "Jahr", "Abschnitt", "Fach", "Datum", "Teilleistung", "Note", "Bemerkung", "Lehrkraft" },
-        //new Schülers()));
-
-        //m.Add(
-        //new Menüeintrag(
-        //"Schuelerbasisdaten.dat erzeugen",
-        //"SchuelerBasisdaten",
-        //@"ImportFürSchild\SchuelerBasisdaten.dat",
-        //@"Beschreibung: Enthält die Basis-Stammdaten der Schüler, insbesondere solche, die für die Statistik relevant sind. Wenn die in den Dateien SchuelerZusatzdaten.dat, SchuelerLernabschnittsdaten.dat, SchuelerLeistungsdaten.dat, SchuelerSprachenfolgen.dat, SchuelerAbitur.dat, SchuelerTelefonnummern.dat, SchuelerErzieher.dat, SchuelerMerkmale.dat, SchuelerAdressen.dat enthaltenen Schüler schon in SchILD-NRW existieren (anhand von Nachname, Vorname und Geburtsdatum), so wird diese Datei beim Import nicht zwingend benötigt. Existieren die Schüler dagegen noch nicht, so muss diese Datei vorhanden sein. Siehe auch: https://wiki.svws.nrw.de/mediawiki/index.php?title=Schnittstellenbeschreibung",
-        //new List<string> { "Nachname", "Vorname", "Geburtsdatum", "Geschlecht", "Status", "PLZ", "Ort", "Straße", "Aussiedler", "1.Staatsang.| Konfession", "StatistikKrz Konfession", "Aufnahmedatum", "Abmeldedatum Religionsunterricht", "Anmeldedatum Religionsunterricht", "Schulpflicht erf.| Reform - Pädagogik", "Nr.Stammschule", "Jahr", "Abschnitt", "Jahrgang", "Klasse", "Schulgliederung", "OrgForm", "Klassenart", "Fachklasse", "Noch frei", "Verpflichtung Sprachförderkurs", "Teilnahme Sprachförderkurs", "Einschulungsjahr", "Übergangsempf.JG5", "Jahr Wechsel S1", "1.Schulform S1", "Jahr Wechsel S2", "Förderschwerpunkt", "2.Förderschwerpunkt", "Schwerstbehinderung", "Autist", "LS Schulnr.| LS Schulform", "Herkunft", "LS Entlassdatum", "LS Jahrgang", "LS Versetzung", "LS Reformpädagogik", "LS Gliederung", "LS Fachklasse", "LS Abschluss", "Abschluss", "Schulnr.neue Schule", "Zuzugsjahr", "Geburtsland Schüler", "Geburtsland Mutter", "Geburtsland Vater", "Verkehrssprache", "Dauer Kindergartenbesuch" },
-        //new Schülers()));
-
-
-
-
-
-        //m.Add(
-        //    new Menüeintrag(
-        //        "Schülerleistungsdaten.dat erzeugen",
-        //        "Schuelerleistungsdaten",
-        //        @"Die Schülerleistungsdaten.dat wird erzeugt. Voraussetzung für einen erfolgreichen Import in SchILD sind die angelegten Fächer und die angelegten Lernabschnittsdaten. Schauen Sie im Importordner nach den beiden zuletzt geannten Dateien...",
-        //        new Schülers(
-        //            "",
-        //            new string[] { }
-        //        )
-        //    )
-        //);
-
-        //m.Add(
-        //    new Menüeintrag(
-        //        "Import für Office 365 erzeugen",
-        //        "import365",
-        //        @"Beschreibung: Enthält die Teilleistungsdaten (Teilleistung und Noten) eines Lernabschnittes (=Halbjahr oder Quartal) der Schüler. ",                
-        //        new Schülers(
-        //            "",
-        //            new string[] { }
-        //        )
-        //    )
-        //);
-
-        //m.Add(
-        //    new Menüeintrag(
-        //        "SchuelerAdressen.dat erzeugen",
-        //        "SchuelerAdressen",
-        //        @"Beschreibung: Enthält weitere Adressen (z.B. von Ausbildungsbetrieben) der Schüler. ",
-        //        new Schülers(
-        //            "",
-        //            new string[] { "Nachname","Vorname","Geburtsdatum","Adressart","Name1","Name2","Straße","PLZ","Ort","1. Tel.-Nr.","2. Tel.-Nr.","E-Mail","Betreuer Nachname","Betreuer Vorname","Betreuer Anrede","Betreuer Tel.-Nr.","Betreuer E-Mail","Betreuer Abteilung","Vertragsbeginn","Vertragsende" }
-        //        )
-        //    )
-        //);
-
-        //m.Add(
-        //    new Menüeintrag(
-        //        "Import für GeeVoo erzeugen",
-        //        "importGeevoo",
-        //        @"Beschreibung: Enthält die Teilleistungsdaten (Teilleistung und Noten) eines Lernabschnittes (=Halbjahr oder Quartal) der Schüler. ",
-        //        new Schülers(
-        //            "",
-        //            new string[] { }
-        //        )
-        //    )
-        //);
-
-        //m.Add(
-        //    new Menüeintrag(
-        //        "Import für Webuntis (inklusive Bilder)",
-        //        "importWebuntis",
-        //        @"Beschreibung: Enthält die Teilleistungsdaten (Teilleistung und Noten) eines Lernabschnittes (=Halbjahr oder Quartal) der Schüler. ",
-        //        new Schülers(
-        //            "",
-        //            new string[] { }
-        //        )
-        //    )
-        //);
-
-        //m.Add(
-        //    new Menüeintrag(
-        //        "Schuelerbasisdaten.dat erzeugen",
-        //        "Schuelerbasisdaten",
-        //        @"Beschreibung: Enthält die Basis-Stammdaten der Schüler, insbesondere solche, die für die Statistik relevant sind. Wenn die in den Dateien SchuelerZusatzdaten.dat, SchuelerLernabschnittsdaten.dat, SchuelerLeistungsdaten.dat, SchuelerSprachenfolgen.dat, SchuelerAbitur.dat, SchuelerTelefonnummern.dat, SchuelerErzieher.dat, SchuelerMerkmale.dat, SchuelerAdressen.dat enthaltenen Schüler schon in SchILD-NRW existieren (anhand von Nachname, Vorname und Geburtsdatum), so wird diese Datei beim Import nicht zwingend benötigt. Existieren die Schüler dagegen noch nicht, so muss diese Datei vorhanden sein. Siehe auch: https://wiki.svws.nrw.de/mediawiki/index.php?title=Schnittstellenbeschreibung#SchuelerBasisdaten.dat ",
-        //        new Schülers(
-        //            @"ImportFürSchild\SchuelerBasisdaten.dat", 
-        //            new string[] { "Nachname","Vorname","Geburtsdatum","Geschlecht","Status","PLZ","Ort","Straße","Aussiedler","1. Staatsang.","Konfession","StatistikKrz Konfession","Aufnahmedatum","Abmeldedatum Religionsunterricht","Anmeldedatum Religionsunterricht","Schulpflicht erf.","Reform-Pädagogik","Nr. Stammschule","Jahr","Abschnitt","Jahrgang","Klasse","Schulgliederung","OrgForm","Klassenart","Fachklasse","Noch frei","Verpflichtung Sprachförderkurs","Teilnahme Sprachförderkurs","Einschulungsjahr","Übergangsempf. JG5","Jahr Wechsel S1","1. Schulform S1","Jahr Wechsel S2","Förderschwerpunkt","2. Förderschwerpunkt","Schwerstbehinderung","Autist","LS Schulnr.","LS Schulform","Herkunft","LS Entlassdatum","LS Jahrgang","LS Versetzung","LS Reformpädagogik","LS Gliederung","LS Fachklasse","LS Abschluss","Abschluss","Schulnr. neue Schule","Zuzugsjahr","Geburtsland Schüler","Geburtsland Mutter","Geburtsland Vater","Verkehrssprache","Dauer Kindergartenbesuch","Ende Eingliederungsphase","Ende Anschlussförderung" }
-        //        )
-        //    )
-        //);
-
-        //this.AddRange(m.OrderBy(c => c.Titel).ToList());
+        
     }
 
-    internal Datei Display(List<Menüeintrag> menüeintrags)
+    internal Menüeintrag Display(List<Menüeintrag> menüeintrags)
     {
-        this.AddRange(menüeintrags.Where(x=>x != null));
+        this.AddRange(menüeintrags.Where(x => x != null));
 
         var configuration = new ConfigurationBuilder().AddJsonFile("appSettings.json", optional: false, reloadOnChange: true).Build();
 
@@ -124,7 +30,9 @@ public class Menü : List<Menüeintrag>
         Console.WriteLine("  Bitte auswählen:");
         Console.WriteLine("");
 
-        Auswahl = Convert.ToInt32(configuration["Auswahl"]);
+        var xx =  this.IndexOf(this.Where(x => x.Titel == configuration["Auswahl"]).FirstOrDefault());
+
+        Auswahl = xx != null ? Math.Max(1,xx + 1) : 1;
 
         for (int i = 0; i < this.Where(x => !string.IsNullOrEmpty(x.Titel)).Count(); i++)
         {
@@ -166,7 +74,9 @@ public class Menü : List<Menüeintrag>
                 {
                     Auswahl = nummer;
                     Console.WriteLine($"     Sie haben die Zahl {Auswahl} eingegeben.");
-                    Global.Speichern("Auswahl", Auswahl.ToString());
+
+                    var x = this[Auswahl - 1].Titel;
+                    Global.Speichern("Auswahl", x);
                     wiederhole = false;
                 }
                 else
@@ -193,6 +103,6 @@ public class Menü : List<Menüeintrag>
         Global.DisplayHeader();
         Global.DisplayHeader(this[Auswahl - 1].Titel, ' ');
         Global.DisplayCenteredBox(this[Auswahl - 1].Beschreibung, 90);
-        return new Datei(this[Auswahl - 1].DateiPfad, this[Auswahl - 1].Titel, this[Auswahl - 1].Kopfzeile);
+        return this[Auswahl - 1];
     }
 }

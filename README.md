@@ -1,13 +1,14 @@
 # Schule.exe
 
-**_Schule.exe_** bietet Unterstützung in der Schulverwaltung an Schnittstellen zwischen Programmen. Z.B. Unterstützung ...
+**_Schule.exe_** bietet Unterstützung in der Schulverwaltung an Schnittstellen zwischen Programmen. Z.B. ...
 
  - bei der Migration von _Atlantis_ nach _SchILD NRW_, indem Importdateien für _SchILD NRW_ erstellt werden.
  - bei der Haupterhebung, indem Leistungsdaten von _Webuntis_ nach _SchILD NRW_ übertragen werden. Dadurch kann die UVD direkt aus _SchILD NRW_ generiert werden.
  - bei Zeugniskonferenzen, indem Noten und Fehlzeiten von Webuntis nach SchILD übertragen werden.
+ - bei Blauen Briefen, indem Noten von Webuntis nach SchILD übertragen werden.
  - beim Übertrag von Schüler*innen nach Webuntis (inkl. Fotos) 
 
-## Voraussetzungen für den Einstz von **_Schule.exe_**
+## Voraussetzungen für den Einsatz von **_Schule.exe_**
 
 1. Administrativer Zugang zu _Atlantis_
 1. Administrativer Zugang zu _SchILD NRW_
@@ -19,21 +20,7 @@
 
 ## Der erste Start
 
-Schule.exe wird ohne Installation in den Ordner der Wahl verschoben und dann doppelgeklickt.
-
-<div style="background-color:#000000; color:white; padding:10px; border-radius:5px;">
-<pre>
-     Schule.exe | https://github.com/stbaeumer/Schule | GPLv3 | Stefan Bäumer 2024 | 10.10.2024
-==================================================================================================
-
-
-
-      
-</pre>
-</div>
-
-
-**_Schule.exe_** legt folgende Ordnerstruktur im selben Ordner an, in dem auch die **_Schule.exe_** ausgeführt wird:
+**_Schule.exe_** legt folgende Ordnerstruktur (ohne Dateien) im selben Ordner an, in dem auch die **_Schule.exe_** ausgeführt wird:
 
 ```
 Schule.exe
@@ -62,6 +49,37 @@ Schule.exe
         Schuelerleistungsdateien.dat
         SchuelerLernabschnittsdaten.dat
 ```
+
+Schule.exe wird ohne Installation in den Ordner der Wahl verschoben und dann doppelgeklickt. Alle interessierenden Dateienwerden eingelesen.
+
+```
+     Schule.exe | https://github.com/stbaeumer/Schule | GPLv3 | Stefan Bäumer 2024 | 10.10.2024
+==================================================================================================
+ExportAusWebuntis\AbsencePerStudent_20240918_1230.csv ....................................... 3082
+ExportAusWebuntis\Student_20240922_0952.csv ................................................. 2220
+ExportAusWebuntis\ExportLessons_20240918_1022.csv ........................................... 1043
+ExportAusWebuntis\MarksPerLesson_20240922_1603.csv ............................................. 0
+ExportAusWebuntis\StudentgroupStudents_20240918_1022.csv .................................... 3169
+ExportAusSchild\Faecher.dat .................................................................. 339
+ExportAusSchild\SchuelerLeistungsdaten.dat ..................................................... 0
+ExportAusSchild\SchuelerLernabschnittsdaten.dat ................................................ 0
+ExportAusSchild\SchuelerTeilleistungen.dat .....................`.............................. 16
+ExportAusSchild\SchuelerBasisdaten.dat ......................................................... 0
+ExportAusAtlantis\sim.csv ................................................................... 3162
+Schüler*innen aus schuelerBasisdaten ........................................................... 0
+Schüler*innen aus students_ ................................................................. 2220
+
+  Bitte auswählen:
+
+   1. SchuelerBasisdaten.dat aus Atlantis-SIM.txt und Webuntis-Student_...csv erzeugen
+   2. PDF-Zeugnis-Stapel in PDF-Einzeldateien umwandeln und sprechend benennen
+
+    Ihre Auswahl [1] :
+
+
+```
+
+
 
 Nicht alle gezeigten Dateien müssen vorhanden sein. **_Schule.exe_** gibt für jede Aufgabe Rückmeldung, welche Dateien fehlen. Die Zeitstempel in den Dateinamen sind Beispiele und können abweichen. Der erste Teil des Dateinamens (inklusive Unterstrich) darf nicht verändert werden, um die Dateien einlesen zu können.
 

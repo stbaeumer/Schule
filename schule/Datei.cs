@@ -207,7 +207,7 @@ public class Datei
 
     public void PdfZeugnisse(List<Datei> dateien, Schülers schuelers)
     {
-        var pdfdateien = new PdfDateien("PDF-Zeugnisse", "PDF-Zeugnisse-Einzeln", schuelers, this);
+        
     }
 
     
@@ -273,7 +273,7 @@ public class Datei
     //            }
     //            finally
     //            {
-    //                Global.ZeileSchreiben(3, "Datei " + DateiPfad + " existiert bereits und wird umbenannt", "ok", Fehler);
+    //                Global.ZeileSchreiben(0, DateiPfad + " existiert bereits und wird umbenannt", "ok", Fehler);
     //            }
     //        }
 
@@ -297,9 +297,9 @@ public class Datei
     //                }
     //                finally
     //                {
-    //                    Global.ZeileSchreiben(3, "Datei " + DateiPfad + " Zeilen", Zeilen.Count().ToString(), Fehler);
+    //                    Global.ZeileSchreiben(0, DateiPfad + " Zeilen", Zeilen.Count().ToString(), Fehler);
     //                    Console.ForegroundColor = ConsoleColor.Magenta;
-    //                    Global.ZeileSchreiben(3, "Datei " + DateiPfad + " erstellt", "ok", Fehler);
+    //                    Global.ZeileSchreiben(0, DateiPfad + " erstellt", "ok", Fehler);
     //                    Console.ForegroundColor = ConsoleColor.White;
     //                    Process.Start("notepad.exe", DateiPfad);
     //                }
@@ -580,7 +580,7 @@ public class Datei
                 }
                 finally
                 {
-                    Global.ZeileSchreiben(3, "Datei " + DateiPfad + " existiert bereits und wird umbenannt", "ok", Fehler);
+                    Global.ZeileSchreiben(0, DateiPfad + " existiert bereits und wird umbenannt", "ok", Fehler);
                 }
             }
 
@@ -613,9 +613,9 @@ public class Datei
                     }
                     finally
                     {
-                        Global.ZeileSchreiben(3, "Datei " + DateiPfad + " Zeilen", Zeilen.Count().ToString(), Fehler);
+                        Global.ZeileSchreiben(0, DateiPfad + " Zeilen", Zeilen.Count().ToString(), Fehler);
                         Console.ForegroundColor = ConsoleColor.Magenta;
-                        Global.ZeileSchreiben(3, "Datei " + DateiPfad + " erstellt", "ok", Fehler);
+                        Global.ZeileSchreiben(0, DateiPfad + "neu erstellt", "ok", Fehler);
                         Console.ForegroundColor = ConsoleColor.White;
                         Process.Start("notepad.exe", DateiPfad);
                     }
@@ -833,6 +833,15 @@ public class Datei
         finally
         {   
         }
+    }
+
+    public Datei(Menüeintrag menü)
+    {
+        DateiPfad = menü.DateiPfad;
+        Titel = menü.Titel;
+        Kopfzeile = menü.Kopfzeile;
+        Zeilen = new Zeilen();
+        Zeilen.Add(new Zeile(Kopfzeile));
     }
 
     public List<string> GetReferenzspalten(List<string> referenzmerkmale)

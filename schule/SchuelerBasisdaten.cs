@@ -84,13 +84,18 @@ public class SchuelerBasisdaten : List<SchuelerBasisdatum>
         return zeilen;
     }
 
+    internal IEnumerable<Zeile> GetZeilen(Schülers iSuS)
+    {
+        throw new NotImplementedException();
+    }
+
     internal SchuelerBasisdaten Interessierende(List<string> interesserendeKlassen)
     {
         var x = this.Where(x => interesserendeKlassen.Contains(x.Klasse)).ToList();
 
         var xx = new SchuelerBasisdaten();
         xx.AddRange(x);
-        Global.ZeileSchreiben(0, "interessierende ", x.Count().ToString(), null, null);
+        Global.ZeileSchreiben(0, "interessierende SchuelerBasisdaten", x.Count().ToString(), null, null);
 
         return xx;
     }

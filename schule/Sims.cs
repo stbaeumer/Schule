@@ -125,7 +125,7 @@ public class Sims : List<Sim>
             }
         }
 
-        Global.ZeileSchreiben(0, "interessierende ", sims.Count.ToString(), null, null);
+        Global.ZeileSchreiben(0, "interessierende SIM", sims.Count.ToString(), null, null);
 
         return sims;
     }

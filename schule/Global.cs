@@ -60,7 +60,7 @@ public static class Global
             rechteSeite = fehler.Message;
         }
 
-        int punkte = gesamtbreite - linkerAbstand - linkeSeite.Length - rechteSeite.Length - 4;
+        int punkte = gesamtbreite - linkerAbstand - linkeSeite.Length - rechteSeite.Length - 5;
         var mitte = " .".PadRight(Math.Max(3, punkte), '.') + " ";
         Console.WriteLine("".PadRight(linkerAbstand + 2) + linkeSeite + mitte + rechteSeite);
 

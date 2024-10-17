@@ -9,7 +9,7 @@ using static Global;
 
 Global.DisplayHeader();
 
-using (var reader = new StreamReader("Alias.txt")) { GlobalCsvMappings.LoadMappingsFromFile("Alias.txt"); }
+Aliasse aliasse = new Aliasse("Alias.txt");
 
 AbsencePerStudents absencePerStudents = new AbsencePerStudents(@"ExportAusWebuntis\AbsencePerStudent", "*.csv", "\t");
 Students students = new Students(@"ExportAusWebuntis\Student_", "*.csv", "\t");
@@ -28,8 +28,8 @@ do
     // Schüler generieren
     Schülers schuelers = new Schülers(schuelerBasisdaten);
     if (schuelers.Count == 0) { schuelers = new Schülers(students); }
-    
-    Datei zielDatei = new Menü().Display(new List<Menüeintrag>() 
+
+    Menüeintrag menüauswahl = new Menü().Display(new List<Menüeintrag>() 
     {
         schuelerBasisdaten.Menüeintrag(sims.Count()),
         schuelerLeistungsdaten.Menüeintrag(schuelerBasisdaten.Count(), exportLessons.Count()),
@@ -39,6 +39,7 @@ do
     
     do
     {
+        Datei zielDatei = new Datei(menüauswahl);
         Schülers iSuS = schuelers.GetIntessierendeSchuelers(zielDatei);
         if (iSuS.Keine()) { break; }
         var iKla = iSuS.Select(x => x.Klasse).Distinct().ToList();
@@ -50,15 +51,18 @@ do
         var iSgS = studentgroupStudents.Interessierende(iKla);
 
         // Alle Funktionen:
-
+        
         if (zielDatei.DateiPfad.ToLower().Contains("basisdaten") && iSim.Count() > 0)
             zielDatei.Zeilen.AddRange(sims.GetZeilen(iSuS));
         
         if (zielDatei.DateiPfad.ToLower().Contains("leistungsdaten") && iExL.Count() > 0)
             zielDatei.Zeilen.AddRange(schuelerBasisdaten.GetZeilen(iApS, iSuS, iExL, iMpL, iSgS));
 
+        if (zielDatei.DateiPfad.ToLower().Contains("pdf") && iSuS.Count() > 0)
+            zielDatei.Zeilen.AddRange(new PdfDateien("PDF-Zeugnisse", "PDF-Zeugnisse-Einzeln", schuelers, this));
+
         //if (zielDatei.DateiPfad.ToLower().Contains("teilleistungen") && iMpL.Count() > 0)
-            //zielDatei.Zeilen = schuelerBasisdaten.GetZeilen(iExL, iMpL, iSgS);
+        //zielDatei.Zeilen = schuelerBasisdaten.GetZeilen(iExL, iMpL, iSgS);
 
 
 
@@ -71,7 +75,7 @@ do
         //    Global.ZeileSchreiben(0, vergleichsdateiDateiPfad, "existiert", null);
 
         //    Datei vergleichsdatei = new Datei();// new Datei(vergleichsdateiDateiPfad);            
-                                
+
         //    Global.ZeileSchreiben(0, vergleichsdateiDateiPfad, vergleichsdatei.Zeilen.Count().ToString(), null);
 
         //    if(zielDatei.DateienVergleichen(vergleichsdatei)) { break; }      
