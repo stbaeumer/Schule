@@ -34,7 +34,7 @@ do
         schuelerBasisdaten.Menüeintrag(sims.Count()),
         schuelerLeistungsdaten.Menüeintrag(schuelerBasisdaten.Count(), exportLessons.Count()),
         schuelerTeilleistungen.Menüeintrag(schuelerBasisdaten.Count(), marksPerLessons.Count()),
-        schuelerBasisdaten.Menüeintrag(),
+        schuelerBasisdaten.Menüeintrag()
     });
     
     do
@@ -58,28 +58,26 @@ do
         if (zielDatei.DateiPfad.ToLower().Contains("leistungsdaten") && iExL.Count() > 0)
             zielDatei.Zeilen.AddRange(schuelerBasisdaten.GetZeilen(iApS, iSuS, iExL, iMpL, iSgS));
 
-        if (zielDatei.DateiPfad.ToLower().Contains("pdf") && iSuS.Count() > 0)
-            zielDatei.Zeilen.AddRange(new PdfDateien("PDF-Zeugnisse", "PDF-Zeugnisse-Einzeln", schuelers, this));
+        if (zielDatei.DateiPfad.ToLower().Contains("pdf") && iSuS.Count() > 0) { 
+            var pdfdateien = new PdfDateien("PDF-Zeugnisse", "PDF-Zeugnisse-Einzeln", schuelers);}
 
         //if (zielDatei.DateiPfad.ToLower().Contains("teilleistungen") && iMpL.Count() > 0)
         //zielDatei.Zeilen = schuelerBasisdaten.GetZeilen(iExL, iMpL, iSgS);
 
 
+        //Dateien vergleichen
+        string vergleichsdateiDateiPfad = zielDatei.CheckFile();
 
+        if (vergleichsdateiDateiPfad != null && vergleichsdateiDateiPfad.ToLower().Contains("export"))
+        {
+            Global.ZeileSchreiben(0, vergleichsdateiDateiPfad, "existiert", null);
 
-        // Dateien vergleichen
-        //string vergleichsdateiDateiPfad = zielDatei.CheckFile();
+            Datei vergleichsdatei = new Datei();// new Datei(vergleichsdateiDateiPfad);            
 
-        //if (vergleichsdateiDateiPfad != null && vergleichsdateiDateiPfad.ToLower().Contains("export"))
-        //{
-        //    Global.ZeileSchreiben(0, vergleichsdateiDateiPfad, "existiert", null);
+            Global.ZeileSchreiben(0, vergleichsdateiDateiPfad, vergleichsdatei.Zeilen.Count().ToString(), null);
 
-        //    Datei vergleichsdatei = new Datei();// new Datei(vergleichsdateiDateiPfad);            
-
-        //    Global.ZeileSchreiben(0, vergleichsdateiDateiPfad, vergleichsdatei.Zeilen.Count().ToString(), null);
-
-        //    if(zielDatei.DateienVergleichen(vergleichsdatei)) { break; }      
-        //}
+            if (zielDatei.DateienVergleichen(vergleichsdatei)) { break; }
+        }
 
         zielDatei.Erstellen();
         

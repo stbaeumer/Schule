@@ -1,7 +1,11 @@
-﻿public class PdfDateien : List<PdfDatei>
+﻿using System.Reflection.Metadata.Ecma335;
+
+public class PdfDateien : List<PdfDatei>
 {
-    public PdfDateien(string inputFolder, string outputFolder, Schülers schuelers, Datei datei)
+    public PdfDateien(string inputFolder, string outputFolder, Schülers schuelers)
     {
+        Zeilen zeilen = new Zeilen();
+
         if (!Directory.Exists(inputFolder))
         {
             Directory.CreateDirectory(inputFolder);
@@ -12,13 +16,13 @@
             Directory.CreateDirectory(outputFolder);
         }
 
-        datei.Zeilen = new Zeilen();
-        datei.Zeilen.Add(new Zeile(new List<string> { "Protokoll " + DateTime.Now.ToString() }));
+        zeilen = new Zeilen();
+        zeilen.Add(new Zeile(new List<string> { "Protokoll " + DateTime.Now.ToString() }));
 
         // Lese alle PDF-Dateien aus dem Ordner "PDF-Zeugnisse"
         foreach (var file in Directory.GetFiles(inputFolder, "*.pdf"))
         {
-            this.Add(new PdfDatei(file, schuelers, outputFolder, datei));
+            this.Add(new PdfDatei(file, schuelers, outputFolder));
         }
-    }
+    }    
 }

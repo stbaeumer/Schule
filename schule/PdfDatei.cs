@@ -12,15 +12,16 @@ public class PdfDatei
     public string Zeugnisart { get; private set; }
     public string Zeugnisdatum { get; private set; }
 
-    public PdfDatei(string dateiName, Schülers schuelers, string outputFolder, Datei datei)
+    public PdfDatei(string dateiName, Schülers schuelers, string outputFolder)
     {
+        Zeilen zeilen = new Zeilen();
         DateiName = dateiName;
         Seiten = new List<PdfSeite>();
 
         using (var pdfReader = new PdfReader(dateiName))
         {
             Global.ZeileSchreiben(0, dateiName, "wird ausgelesen:",null,null);
-            datei.Zeilen.Add(new Zeile(new List<string> { dateiName }));
+            zeilen.Add(new Zeile(new List<string> { dateiName }));
 
             for (int i = 1; i <= pdfReader.NumberOfPages; i++)
             {
@@ -55,7 +56,7 @@ public class PdfDatei
                             }
                         }
                         Global.ZeileSchreiben(0, schueler.Nachname.PadRight(20) + Zeugnisart.PadRight(14) + Zeugnisdatum, "ok", null, null);
-                        datei.Zeilen.Add(new Zeile(new List<string> { schueler.Nachname, schueler.Vorname , Zeugnisart, Zeugnisdatum }));
+                        zeilen.Add(new Zeile(new List<string> { schueler.Nachname, schueler.Vorname , Zeugnisart, Zeugnisdatum }));
                         seite.Ausschneiden(outputFolder);
 
                         Seiten.Add(seite);
