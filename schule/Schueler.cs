@@ -99,7 +99,7 @@ public class Schueler
     public string Zeugnisdatum { get; internal set; }
     public string Zeugnisart { get; internal set; }
 
-    public string GetFehlstd(AbsencePerStudents absencesPerStudent)
+    public string GetFehlstd(AbsSt absencesPerStudent)
     {
         try
         {
@@ -124,7 +124,7 @@ public class Schueler
         }
     }
 
-    public string GetUnentFehlstd(AbsencePerStudents absencesPerStudent)
+    public string GetUnentFehlstd(AbsSt absencesPerStudent)
     {
         try
         {
@@ -270,15 +270,15 @@ public class Schueler
     //    }
     //}
 
-    internal string GetNote(MarksPerLessons marksPerLesson)
+    internal string GetNote(Marks marksPerLesson)
     {
         try
         {
             var note = from zeile in marksPerLesson
-                       where zeile.name.Contains(Vorname)
-                       where zeile.name.Contains(Nachname)
-                       where zeile.klasse.Contains(Klasse)
-                       select zeile.gesamtnote.Distinct().ToList();
+                       where zeile.Name.Contains(Vorname)
+                       where zeile.Name.Contains(Nachname)
+                       where zeile.Klasse.Contains(Klasse)
+                       select zeile.Gesamtnote.Distinct().ToList();
 
             if (note.Count() > 1)
             {

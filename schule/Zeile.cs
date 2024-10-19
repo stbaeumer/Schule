@@ -1,7 +1,6 @@
 ﻿
 public class Zeile : List<string>
-{
- 
+{ 
     public Zeile(List<string> zellen, bool istKopfzeile = false)
     {
         // Durchlaufe alle Zellen. 

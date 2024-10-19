@@ -1,68 +1,81 @@
-﻿using DocumentFormat.OpenXml.Spreadsheet;
-using Microsoft.VisualBasic;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Resources;
 using System.Text;
+using System.IO;
 using static Global;
 
+Console.WindowHeight = 40;
 Global.DisplayHeader();
+Global.Ausgaben = new Ausgaben();
+SchAd schAd = new SchAd(@"ExportAusSchild\SchuelerAdressen");
+Adres adres = new Adres(@"ExportAusSchild\Adressen");
+Kurse kurse = new Kurse(@"ExportAusSchild\Kurse");
+SchTe schTe = new SchTe(@"ExportAusSchild\SchuelerTelefonnummern");
+SchBa schBa = new SchBa(@"ExportAusSchild\SchuelerBasisdaten");
+Faech faech = new Faech(@"ExportAusSchild\Faecher");
+ScLei scLei = new ScLei(@"ExportAusSchild\SchuelerLeistungsdaten");
+ScLer scLer = new ScLer(@"ExportAusSchild\SchuelerLernabschnittsdaten");
+ScTei scTei = new ScTei(@"ExportAusSchild\SchuelerTeilleistungen");
+Marks marks = new Marks(@"ExportAusWebuntis\MarksPerLesson", "*.csv", "\t");
+ExpLe expLe = new ExpLe(@"ExportAusWebuntis\ExportLessons", "*.csv", "\t");
+StgrS stgrS = new StgrS(@"ExportAusWebuntis\StudentgroupStudents", "*.csv", "\t");
+Studs studs = new Studs(@"ExportAusWebuntis\Student_", "*.csv", "\t");
+AbsSt absSt = new AbsSt(@"ExportAusWebuntis\AbsencePerStudent", "*.csv", "\t");
+Simss simss = new Simss(@"ExportAusAtlantis\sim.csv", "*.csv", ";");
+AllAd allAd = new AllAd(@"ExportAusAtlantis\AlleAdressen.csv", "*.csv", ";");
 
-Aliasse aliasse = new Aliasse("Alias.txt");
-
-AbsencePerStudents absencePerStudents = new AbsencePerStudents(@"ExportAusWebuntis\AbsencePerStudent", "*.csv", "\t");
-Students students = new Students(@"ExportAusWebuntis\Student_", "*.csv", "\t");
-ExportLessons exportLessons = new ExportLessons(@"ExportAusWebuntis\ExportLessons", "*.csv", "\t");
-MarksPerLessons marksPerLessons = new MarksPerLessons(@"ExportAusWebuntis\MarksPerLesson", "*.csv", "\t");
-StudentgroupStudents studentgroupStudents = new StudentgroupStudents(@"ExportAusWebuntis\StudentgroupStudents", "*.csv", "\t");
-Faecher faecher = new Faecher(@"ExportAusSchild\Faecher","*.dat");
-SchuelerLeistungsdaten schuelerLeistungsdaten = new SchuelerLeistungsdaten(@"ExportAusSchild\SchuelerLeistungsdaten", "*.dat");
-SchuelerLernabschnittsdaten schuelerLernabschnittsdaten = new SchuelerLernabschnittsdaten(@"ExportAusSchild\SchuelerLernabschnittsdaten", "*.dat");
-SchuelerTeilleistungen schuelerTeilleistungen = new SchuelerTeilleistungen(@"ExportAusSchild\SchuelerTeilleistungen", "*.dat");
-SchuelerBasisdaten schuelerBasisdaten = new SchuelerBasisdaten(@"ExportAusSchild\SchuelerBasisdaten", "*.dat");
-Sims sims = new Sims(@"ExportAusAtlantis\sim.csv", "*.csv", ";");
+// Schüler generieren
+Schülers schus = new Schülers(schBa);
+if (schus.Count == 0) { schus = new Schülers(studs); }
 
 do
-{
-    // Schüler generieren
-    Schülers schuelers = new Schülers(schuelerBasisdaten);
-    if (schuelers.Count == 0) { schuelers = new Schülers(students); }
-
+{   
     Menüeintrag menüauswahl = new Menü().Display(new List<Menüeintrag>() 
     {
-        schuelerBasisdaten.Menüeintrag(sims.Count()),
-        schuelerLeistungsdaten.Menüeintrag(schuelerBasisdaten.Count(), exportLessons.Count()),
-        schuelerTeilleistungen.Menüeintrag(schuelerBasisdaten.Count(), marksPerLessons.Count()),
-        schuelerBasisdaten.Menüeintrag()
+         new Menüeintrag("SchuelerBasi", simss.Count),
+         new Menüeintrag("WebuntisImpo", schBa.Count + schAd.Count + adres.Count),
+         new Menüeintrag("SchuelerLeis", schBa.Count + expLe.Count),
+         new Menüeintrag("SchuelerTeil", schBa.Count + marks.Count()),
+         new Menüeintrag("SchuelerAdre", allAd.Count + schBa.Count()),
+         new Menüeintrag("SchuelerTele", allAd.Count + schBa.Count()),
+         new Menüeintrag("PDF-Kennwort"),
     });
-    
+
     do
     {
         Datei zielDatei = new Datei(menüauswahl);
-        Schülers iSuS = schuelers.GetIntessierendeSchuelers(zielDatei);
-        if (iSuS.Keine()) { break; }
-        var iKla = iSuS.Select(x => x.Klasse).Distinct().ToList();
-        var iSim = sims.Interessierende(iKla);
-        var iSba = schuelerBasisdaten.Interessierende(iKla);
-        var iExL = exportLessons.Interessierende(iKla);
-        var iApS = absencePerStudents.Interessierende(iKla);
-        var iMpL = marksPerLessons.Interessierende(iKla);
-        var iSgS = studentgroupStudents.Interessierende(iKla);
 
-        // Alle Funktionen:
-        
-        if (zielDatei.DateiPfad.ToLower().Contains("basisdaten") && iSim.Count() > 0)
-            zielDatei.Zeilen.AddRange(sims.GetZeilen(iSuS));
-        
-        if (zielDatei.DateiPfad.ToLower().Contains("leistungsdaten") && iExL.Count() > 0)
-            zielDatei.Zeilen.AddRange(schuelerBasisdaten.GetZeilen(iApS, iSuS, iExL, iMpL, iSgS));
+        if (menüauswahl.Titel.Contains("PDF-Dateien auf dem Desktop mit Kennwort"))
+        {
+            var pdfdateien = new PdfDateien();
+            break;
+        }
 
-        if (zielDatei.DateiPfad.ToLower().Contains("pdf") && iSuS.Count() > 0) { 
-            var pdfdateien = new PdfDateien("PDF-Zeugnisse", "PDF-Zeugnisse-Einzeln", schuelers);}
+        var iSchuS = schus.Interessierende(zielDatei); if (iSchuS.Keine()) { break; }
+        var iKlass = iSchuS.Select(x => x.Klasse).Distinct().ToList();
+        var iSimss = simss.Interessierende(iKlass);
+        var iSchBa = schBa.Interessierende(iKlass);
+        var iExpLe = expLe.Interessierende(iKlass);
+        var iAbsSt = absSt.Interessierende(iKlass);
+        var iMarks = marks.Interessierende(iKlass);
+        var iStgrS = stgrS.Interessierende(iKlass);
+        var iSchAd = schAd.Interessierende(iSchuS);        
+                
+        if (zielDatei.Titel.StartsWith("SchuelerBasisdaten") && iSimss.Count() > 0)
+            zielDatei.Zeilen.AddRange(simss.GetSchuelerBasisdaten(iSchuS));
+        if (zielDatei.Titel.StartsWith("SchuelerAdressen") && iSimss.Count() > 0)
+            zielDatei.Zeilen.AddRange(allAd.GetSchuelerAdressen(iSchuS));
+        if (zielDatei.Titel.StartsWith("SchuelerTelefonn") && iSimss.Count() > 0)
+            zielDatei.Zeilen.AddRange(allAd.GetSchuelerTelefonnummern(iSchuS));
+        if (zielDatei.Titel.StartsWith("SchuelerLeistungsd") && iExpLe.Count() > 0)
+            zielDatei.Zeilen.AddRange(schBa.GetLeistungsdaten(iAbsSt, iSchuS, iExpLe, iMarks, iStgrS));
+        if (zielDatei.Titel.StartsWith("SchuelerTeilleistu") && iSchuS.Count() > 0)
+            zielDatei.Zeilen.AddRange(schBa.GetSchuelerTeilleistung(iSchAd, iSchAd));
 
-        //if (zielDatei.DateiPfad.ToLower().Contains("teilleistungen") && iMpL.Count() > 0)
-        //zielDatei.Zeilen = schuelerBasisdaten.GetZeilen(iExL, iMpL, iSgS);
+        //if (zielDatei.Titel.StartsWith("Kopien von PDF-Dat") && iSchuS.Count() > 0) { 
+        //    var pdfdateien = new PdfDateien("PDF-Zeugnisse", "PDF-Zeugnisse-Einzeln", schus);}
 
 
         //Dateien vergleichen

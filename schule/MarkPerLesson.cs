@@ -1,15 +1,14 @@
 ﻿public class MarkPerLesson
 {
-    public DateTime datum{get; set;}
-    public string name{get; set;}
-    public string klasse{get; set;}
-    public string fach{get; set;}
-    public string pruefungsart{get; set;}
-    public string note{get; set;}
-    public string bemerkung{get; set;}
-    public string benutzer{get; set;}
-    public string schluesselExtern{get; set;}
-    public string gesamtnote{get; set;}
-
+    public string Datum { get; set; }
+    public string Name { get; set; }
+    public string Klasse { get; set; }
+    public string Fach { get; set; }
+    public string Prüfungsart { get; set; }
+    public string Note { get; set; }
+    public string Bemerkung { get; set; }
+    public string Benutzer { get; set; }
+    public string SchlüsselExtern { get; set; }
+    public string Gesamtnote { get; set; }
 }
 

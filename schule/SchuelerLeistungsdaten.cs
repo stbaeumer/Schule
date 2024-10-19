@@ -1,35 +1,70 @@
-﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 
-public class SchuelerLeistungsdaten : List<SchuelerLeistungsdatum>
+public class ScLei : List<SchuelerLeistungsdatum>
 {
-    public SchuelerLeistungsdaten(string dateiPfad, string dateiendungen)
+    public ScLei(string dateiName, string dateiendung = "*.dat", string delimiter = "|")
     {
-        var hinweise = new string[] {
+        var dateiPfad = Global.CheckFile(dateiName, dateiendung);
+
+        if (dateiPfad == null)
+        {
+            var hinweise = new string[] {
                 "Exportieren Sie die Datei aus SchILD, indem Sie:",
                 "In SchILD den Pfad gehen: Datenaustausch > Schnittstelle > Export",
                 "Die Datei auswählen.",
-                "Die Datei speichern im Ordner: " + Directory.GetCurrentDirectory() };
-
-        List<object> result = Global.LiesDateien(dateiPfad, dateiendungen, hinweise);
-
-        foreach (var r in result)
-        {
-            SchuelerLeistungsdatum s = (SchuelerLeistungsdatum)r;
-            this.Add(s);
+                "Die Datei speichern im Ordner: " + Directory.GetCurrentDirectory()
+            };
+            Global.ZeileSchreiben(0, dateiName, "keine Datei gefunden", new Exception("keine Datei gefunden"), hinweise);
+            return;
         }
+
+        // Konfiguration für CsvReader: Header und Delimiter anpassen
+        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+        {
+            HeaderValidated = null,
+            MissingFieldFound = null,
+            HasHeaderRecord = true,   // Gibt an, dass die CSV-Datei eine Kopfzeile hat
+            Delimiter = delimiter
+        };
+
+        using (var reader = new StreamReader(dateiPfad))
+        using (var csv = new CsvReader(reader, config))
+        {
+            csv.Context.RegisterClassMap<SchuelerLeistungsdatenMap>();
+            csv.Context.TypeConverterCache.AddConverter<string>(new TrimAndReplaceUnderscoreConverter());
+            var records = csv.GetRecords<SchuelerLeistungsdatum>();
+            this.AddRange(records);
+        }
+        Global.Ausgaben.Add(new Ausgabe(0, dateiPfad, this.Count().ToString()));
     }
+}
 
-    internal Menüeintrag Menüeintrag(int countSbd, int count)
+public class SchuelerLeistungsdatenMap : ClassMap<SchuelerLeistungsdatum>
+{
+    public SchuelerLeistungsdatenMap()
     {
-        if (countSbd > 0 && count > 0)
-        {
-            return new Menüeintrag(
-                "SchuelerLeistungsdaten.dat erzeugen aus Webuntis-Dateien erzeugen",
-                @"ImportFürSchild\SchuelerLeistungsdaten.dat",
-                @"Beschreibung: Enthält die Leistungsdaten (Fächer und Noten) eines Lernabschnittes (=Halbjahr oder Quartal) der Schüler.",
-                new List<string> { "Nachname", "Vorname", "Geburtsdatum", "Jahr", "Abschnitt", "Fach", "Fachlehrer", "Kursart", "Kurs", "Note", "Abiturfach", "Wochenstd.", "Externe Schulnr.", "Zusatzkraft", "Wochenstd. ZK", "Jahrgang", "Jahrgänge", "Fehlstd.", "unentsch. Fehlstd." });
-        }
-        return null;
-    } 
+        Map(m => m.Nachname).Name("Nachname");
+        Map(m => m.Vorname).Name("Vorname");
+        Map(m => m.Geburtsdatum).Name("Geburtsdatum");
+        Map(m => m.Jahr).Name("Jahr");
+        Map(m => m.Abschnitt).Name("Abschnitt");
+        Map(m => m.Fach).Name("Fach");
+        Map(m => m.Fachlehrer).Name("Fachlehrer");
+        Map(m => m.Kursart).Name("Kursart");
+        Map(m => m.Kurs).Name("Kurs");
+        Map(m => m.Note).Name("Note");
+        Map(m => m.Abiturfach).Name("Abiturfach");
+        Map(m => m.Wochenstd).Name("Wochenstd.");
+        Map(m => m.ExterneSchulnr).Name("Externe Schulnr.");
+        Map(m => m.Zusatzkraft).Name("Zusatzkraft");
+        Map(m => m.WochenstdZK).Name("Wochenstd. ZK");
+        Map(m => m.Jahrgang).Name("Jahrgang");
+        Map(m => m.Jahrgänge).Name("Jahrgänge");
+        Map(m => m.Fehlstd).Name("Fehlstd.");
+        Map(m => m.UnentschFehlstd).Name("unentsch. Fehlstd.");
+    }
 }

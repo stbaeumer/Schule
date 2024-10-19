@@ -21,6 +21,7 @@ public static class Global
     public static List<int> AktSj { get; set; }
     public static IEnumerable<char> Delimiter { get; set; }
     public static List<string> ReferenzMerkmale { get; set; }
+    public static Ausgaben Ausgaben { get; set; }
 
     internal static void DisplayHeader(string text = "h1", char unterstrich = '=')
     {
@@ -275,13 +276,11 @@ public static class Global
         }
     }
 
-    internal static List<object> LiesDateien(string dateiName, string dateiendungen, string[] hinweise, string delimiter = "|")
+    internal static List<object> LiesDateien(string dateiName, string dateiendung, string[] hinweise, string delimiter = "|")
     {
         var objekt = new List<object>();
 
-        string[] endungen = dateiendungen.Split(',');
-
-        var dateiPfad = CheckFile(dateiName, endungen);
+        var dateiPfad = CheckFile(dateiName, dateiendung);
 
         if (dateiPfad == null)
         {
@@ -318,8 +317,8 @@ public static class Global
             }
             if (dateiName.ToLower().Contains("marksperlessons"))
             {
-                csv.Context.RegisterClassMap<MarksPerLessonMap>();
-                objekt.AddRange(new List<MarkPerLesson>(csv.GetRecords<MarkPerLesson>()));
+                //csv.Context.RegisterClassMap<MarksPerLessonMap>();
+                //objekt.AddRange(new List<MarkPerLesson>(csv.GetRecords<MarkPerLesson>()));
             }
             if (dateiName.ToLower().Contains("studentgroupstudents"))
             {
@@ -346,6 +345,16 @@ public static class Global
             {
                 objekt.AddRange(new List<SchuelerTeilleistung>(csv.GetRecords<SchuelerTeilleistung>()));
             }
+            //if (dateiName.ToLower().Contains("schueleradressen"))
+            //{
+            //    csv.Context.RegisterClassMap<SchuelerAdressenMap>();
+            //    objekt.AddRange(new List<SchuelerAdresse>(csv.GetRecords<SchuelerAdresse>()));
+            //}
+            //if (dateiName.ToLower().Contains("Adressen"))
+            //{
+            //    csv.Context.RegisterClassMap<SchuelerAdressenMap>();
+            //    objekt.AddRange(new List<Adresse>(csv.GetRecords<Adresse>()));
+            //}
             if (dateiName.ToLower().Contains("sim."))
             {
                 csv.Context.RegisterClassMap<SimsMap>();
@@ -359,24 +368,18 @@ public static class Global
     }
 
 
-    private static string CheckFile(string dateiPfad, string[] endungen)
+    public static string CheckFile(string dateiPfad, string endung)
     {
-        // Wenn kein Parameter übergeben wird, dann wird der Dateipfad der Instanz verwendet, wobei Import durch Export ersetzt wird.
-
         if (!Path.Exists(Path.GetDirectoryName(dateiPfad)))
         {
             Directory.CreateDirectory(Path.GetDirectoryName(dateiPfad));
         }
 
-        var sourceFile = (from ext in endungen
-                          from f in Directory.GetFiles(Path.GetDirectoryName(dateiPfad), ext, SearchOption.AllDirectories)
+        var sourceFile = (from f in Directory.GetFiles(Path.GetDirectoryName(dateiPfad), endung, SearchOption.AllDirectories)
                           where Path.GetFileName(f).StartsWith(Path.GetFileName(dateiPfad))
                           orderby File.GetLastWriteTime(f)
                           select f).LastOrDefault();
-        if (sourceFile == null)
-        {
-            sourceFile = dateiPfad;
-        }
+
         return sourceFile;
     }
 

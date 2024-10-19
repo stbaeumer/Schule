@@ -17,12 +17,11 @@ public class Menü : List<Menüeintrag>
 
     public Menü()
     {
-        
     }
 
     internal Menüeintrag Display(List<Menüeintrag> menüeintrags)
     {
-        this.AddRange(menüeintrags.Where(x => x != null));
+        this.AddRange(menüeintrags.Where(x => x.Titel != "" && x.Titel != null));
 
         var configuration = new ConfigurationBuilder().AddJsonFile("appSettings.json", optional: false, reloadOnChange: true).Build();
 
@@ -34,7 +33,7 @@ public class Menü : List<Menüeintrag>
 
         Auswahl = xx != null ? Math.Max(1,xx + 1) : 1;
 
-        for (int i = 0; i < this.Where(x => !string.IsNullOrEmpty(x.Titel)).Count(); i++)
+        for (int i = 0; i < this.Where(x => x != null && !string.IsNullOrEmpty(x.Titel)).Count(); i++)
         {
             Console.WriteLine(" " + (i + 1).ToString().PadLeft(3) + ". " + this[i].Titel.PadRight(13));
         }

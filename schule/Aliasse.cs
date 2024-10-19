@@ -7,11 +7,11 @@ public class Aliasse : List<string[]>
     public List<string[]> Zeilen { get; private set; }
     public Exception Fehler { get; private set; }
 
-    public Aliasse(string filePath)
+    public Aliasse(string dateiPfad)
     {
         try
         {
-            if (!File.Exists(filePath))
+            if (!File.Exists(dateiPfad))
             {
                 this.AddRange(GetVorgabewerte());
 
@@ -23,9 +23,9 @@ public class Aliasse : List<string[]>
                     "Jede Spalte muss exakt drei Einträge enthalten."
                 };
 
-                Global.ZeileSchreiben(0, "Die Alias-Datei namens " + filePath + " wird erstellt", "ok", new Exception("ok"), hinweise);
+                Global.ZeileSchreiben(0, "Die Alias-Datei namens " + dateiPfad + " wird erstellt", "ok", new Exception("ok"), hinweise);
 
-                using (FileStream fs = new FileStream(DateiPfad, FileMode.CreateNew))
+                using (FileStream fs = new FileStream(dateiPfad, FileMode.CreateNew))
                 {
                     Encoding encoding = Encoding.UTF8;
                     using (StreamWriter writer = new StreamWriter(fs, encoding))
@@ -51,7 +51,7 @@ public class Aliasse : List<string[]>
 
             // Daten aus der Excel-Datei einlesen
 
-            using (var reader = new StreamReader(filePath)) { GlobalCsvMappings.LoadMappingsFromFile(filePath); }
+            using (var reader = new StreamReader(dateiPfad)) { GlobalCsvMappings.LoadMappingsFromFile(dateiPfad); }
 
         }
         catch (Exception ex)
@@ -71,6 +71,8 @@ public class Aliasse : List<string[]>
         new[] { "Fehlmin","Fehlmin.","Fehlmin." },
         new[] { "Name","Schüler*innen","Schüler" },
         new[] { "ExterneId","Externe Id","Externe Id" },
+        new[] { "ExterneID","Externe ID","Externe ID" },
+        new[] { "SchILDID","Schild-ID","SchILD-ID" },
         new[] { "Fehlstd","Fehlstd.","Fehlst" },
         new[] { "Abwesenheitzaehlt","Abwesenheit zählt","Abwesenheit zählt" },
         new[] { "addressEmail","address.email","address.email" },
@@ -157,7 +159,15 @@ public class Aliasse : List<string[]>
         new[] { "Produktversion67","Produktversion67","67 Produktversion" },
         new[] { "Adressmerkmal68","Adressmerkmal68","68 Adressmerkmal" },
         new[] { "Internatsplatz69","Internatsplatz69","69 Internatsplatz" },
-        new[] { "Koopklasse70","Koopklasse70","70 Koopklasse" }
+        new[] { "Koopklasse70","Koopklasse70","70 Koopklasse" },
+        new[] { "Telefonnummer1", "1. Tel.-Nr.", "1. Tel.-Nr." },
+        new[] { "Telefonnummer1", "2. Tel.-Nr.", "2. Tel.-Nr." },
+        new[] { "BetreuerNachname", "Betreuer Nachname", "Betreuer Nachname" },
+        new[] { "BetreuerVorname", "Betreuer Vorname", "Betreuer Vorname" },
+        new[] { "BetreuerAnrede", "Betreuer Anrede", "Betreuer Anrede" },
+        new[] { "BetreuerTelefonnummer", "Betreuer Tel.-Nr.", "Betreuer Tel.-Nr." },
+        new[] { "BetreuerEmail", "Betreuer E-Mail", "Betreuer E-Mail" },
+        new[] { "BetreuerAbteilung", "Betreuer Abteilung", "Betreuer Abteilung" }
     };
         return vorgabewerte;
     }

@@ -4,13 +4,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 
-public class AbsSt : List<AbsencePerStudent>
+public class Kurse : List<Kurs>
 {
-    public AbsSt()
-    {
-    }
-
-    public AbsSt(string dateiName, string dateiendung = "*.dat", string delimiter = "|")
+    public Kurse(string dateiName, string dateiendung = "*.dat", string delimiter = "|")
     {
         var dateiPfad = Global.CheckFile(dateiName, dateiendung);
 
@@ -38,42 +34,30 @@ public class AbsSt : List<AbsencePerStudent>
         using (var reader = new StreamReader(dateiPfad))
         using (var csv = new CsvReader(reader, config))
         {
-            csv.Context.RegisterClassMap<AbsencePerStudentsMap>();
+            csv.Context.RegisterClassMap<KurseMap>();
             csv.Context.TypeConverterCache.AddConverter<string>(new TrimAndReplaceUnderscoreConverter());
-            var records = csv.GetRecords<AbsencePerStudent>();
+            var records = csv.GetRecords<Kurs>();
             this.AddRange(records);
         }
         Global.Ausgaben.Add(new Ausgabe(0, dateiPfad, this.Count().ToString()));
     }
-
-    internal AbsSt Interessierende(List<string> interessierendeKlassen)
-    {
-        var x = this.Where(x => interessierendeKlassen.Contains(x.Klasse)).ToList();
-        var xx = new AbsSt();
-        xx.AddRange(x);
-        Global.ZeileSchreiben(0, "interessierende SchuelerBasisdaten", x.Count().ToString(), null, null);
-        return xx;
-    }
 }
 
-public class AbsencePerStudentsMap : ClassMap<AbsencePerStudent>
+public class KurseMap : ClassMap<Kurs>
 {
-    public AbsencePerStudentsMap()
+    public KurseMap()
     {
-        Map(m => m.Name).Name("Schüler*innen");
-        Map(m => m.ExterneId).Name("Externe Id");
-        Map(m => m.Text).Name("Text");
+        Map(m => m.KursBez).Name("KursBez");
         Map(m => m.Klasse).Name("Klasse");
-        Map(m => m.Datum).Name("Datum");
-        Map(m => m.Wochentag).Name("Wochentag");
-        Map(m => m.Fehlstd).Name("Fehlstd.");
-        Map(m => m.Fehlmin).Name("Fehlmin.");
-        Map(m => m.Abwesenheitsgrund).Name("Abwesenheitsgrund");
-        Map(m => m.ENr).Name("ENr");
-        Map(m => m.Erledigt).Name("Erledigt");
-        Map(m => m.AbwesenheitZaehlt).Name("Abwesenheit zählt");
-        Map(m => m.Entschuldigungstext).Name("Entschuldigungstext");
-        Map(m => m.Status).Name("Status");
-        Map(m => m.Fehltage).Name("Fehltage");
+        Map(m => m.Jahr).Name("Jahr");
+        Map(m => m.Abschnitt).Name("Abschnitt");
+        Map(m => m.Jahrgang).Name("Jahrgang");
+        Map(m => m.Fach).Name("Fach");
+        Map(m => m.Kursart).Name("Kursart");
+        Map(m => m.Wochenstd).Name("Wochenstd.");
+        Map(m => m.WochenstdKL).Name("Wochenstd. KL");
+        Map(m => m.Kursleiter).Name("Kursleiter");
+        Map(m => m.Epochenunterricht).Name("Epochenunterricht");
+        Map(m => m.Schulnr).Name("Schulnr");
     }
 }

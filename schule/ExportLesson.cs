@@ -1,14 +1,14 @@
 ﻿public class ExportLesson
 {
-    public string lessonId{get; set;}
-    public string lessonNumber{get; set;}
-    public string subject{get; set;}
-    public string teacher{get; set;}
-    public string klassen{get; set;}
-    public string studentgroup{get; set;}
-    public string periods{get; set;}
-    public string startDate{get; set;}
-    public string? endDate{get; set;}
-    public string room{get; set;}
-    public string foreignKey{get; set;}
+    public string LessonId { get; set; }
+    public string LessonNumber { get; set; }
+    public string Subject { get; set; }
+    public string Teacher { get; set; }
+    public string Klassen { get; set; }
+    public string Studentgroup { get; set; }
+    public string Periods { get; set; }
+    public string StartDate { get; set; }
+    public string EndDate { get; set; }
+    public string Room { get; set; }
+    public string ForeignKey { get; set; }
 }

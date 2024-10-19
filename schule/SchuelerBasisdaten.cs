@@ -1,35 +1,58 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using PdfSharp.Diagnostics;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Globalization;
+using System.IO;
 
-public class SchuelerBasisdaten : List<SchuelerBasisdatum>
+public class SchBa : List<SchuelerBasisdatum>
 {
-    public SchuelerBasisdaten()
-    {
-    }
+    public SchBa() { }
 
-    public SchuelerBasisdaten(string dateiPfad, string dateiendungen)
+    public SchBa(string dateiName, string dateiendung = "*.dat", string delimiter = "|")
     {
-        var hinweise = new string[] {
+        var dateiPfad = Global.CheckFile(dateiName, dateiendung);
+
+        if (dateiPfad == null)
+        {
+            var hinweise = new string[] {
                 "Exportieren Sie die Datei aus SchILD, indem Sie:",
                 "In SchILD den Pfad gehen: Datenaustausch > Schnittstelle > Export",
                 "Die Datei auswählen.",
-                "Die Datei speichern im Ordner: " + Directory.GetCurrentDirectory() };
-
-        List<object> result = Global.LiesDateien(dateiPfad, dateiendungen, hinweise);
-
-        foreach (var r in result)
-        {
-            SchuelerBasisdatum s = (SchuelerBasisdatum)r;
-            this.Add(s);
+                "Die Datei speichern im Ordner: " + Directory.GetCurrentDirectory()
+            };
+            Global.ZeileSchreiben(0, dateiName, "keine Datei gefunden", new Exception("keine Datei gefunden"), hinweise);
+            return;
         }
+
+        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+        {
+            HeaderValidated = null,
+            MissingFieldFound = null,
+            HasHeaderRecord = true,
+            Delimiter = delimiter
+        };
+
+        using (var reader = new StreamReader(dateiPfad))
+        using (var csv = new CsvReader(reader, config))
+        {
+            csv.Context.RegisterClassMap<SchuelerBasisdatenMap>();
+            csv.Context.TypeConverterCache.AddConverter<string>(new TrimAndReplaceUnderscoreConverter());
+            var records = csv.GetRecords<SchuelerBasisdatum>();
+            this.AddRange(records);
+        }
+        Global.Ausgaben.Add(new Ausgabe(0, dateiPfad, this.Count().ToString()));
     }
 
-    
+    internal SchBa Interessierende(List<string> interessierendeKlassen)
+    {
+        var x = this.Where(x => interessierendeKlassen.Contains(x.Klasse)).ToList();
+        var xx = new SchBa();
+        xx.AddRange(x);
+        Global.ZeileSchreiben(0, "interessierende SchuelerBasisdaten", x.Count().ToString(), null, null);
+        return xx;
+    }
 
-    public Zeilen GetZeilen(AbsencePerStudents absencePerStudents, Schülers interessierendeSchuelers, ExportLessons exportLessons, MarksPerLessons marksPerLessons, StudentgroupStudents studentgroupStudents)
+    public Zeilen GetLeistungsdaten(AbsSt absencePerStudents, Schülers interessierendeSchuelers, ExpLe exportLessons, Marks marksPerLessons, StgrS studentgroupStudents)
     {
         Zeilen zeilen = new Zeilen();
 
@@ -39,16 +62,15 @@ public class SchuelerBasisdaten : List<SchuelerBasisdatum>
             {
                 SchuelerBasisdatum sB = this.Find(x => x.Vorname == schueler.Vorname && x.Nachname == schueler.Nachname && x.Klasse == schueler.Klasse);
 
-
                 foreach (var zeile in (from zeile in exportLessons
-                                       where zeile.klassen.Split('~').Contains(schueler.Klasse)
+                                       where zeile.Klassen.Split('~').Contains(schueler.Klasse)
                                        select zeile).ToList())
                 {
                     string note = schueler.GetNote(marksPerLessons);
 
-                    if (zeile.klassen.Contains(schueler.Klasse))
+                    if (zeile.Klassen.Contains(schueler.Klasse))
                     {
-                        if (zeile.studentgroup == "") // Klassenunterricht werden immer hinzugefügt
+                        if (zeile.Studentgroup == "") // Klassenunterricht werden immer hinzugefügt
                         {
                             zeilen.Add(new Zeile(new List<string>()
                             {
@@ -57,12 +79,12 @@ public class SchuelerBasisdaten : List<SchuelerBasisdatum>
                                 sB.Geburtsdatum,
                                 sB.Jahr,
                                 sB.Abschnitt,
-                                zeile.subject,
-                                zeile.teacher,
+                                zeile.Subject,
+                                zeile.Teacher,
                                 "PUK",  // Pflichtunterricht im Klassenverband
                                 "",     // Kein Kursname
                                 note,
-                                zeile.periods,
+                                zeile.Periods,
                                 "", // ExterneSchulnr
                                 "", // Zusatzkraft
                                 "", // WochenstdZK
@@ -84,42 +106,72 @@ public class SchuelerBasisdaten : List<SchuelerBasisdatum>
         return zeilen;
     }
 
-    internal IEnumerable<Zeile> GetZeilen(Schülers iSuS)
+    internal IEnumerable<Zeile> GetSchuelerTeilleistung(SchAd iSchAd1, SchAd iSchAd2)
     {
         throw new NotImplementedException();
     }
+}
 
-    internal SchuelerBasisdaten Interessierende(List<string> interesserendeKlassen)
+
+public class SchuelerBasisdatenMap : ClassMap<SchuelerBasisdatum>
+{
+    public SchuelerBasisdatenMap()
     {
-        var x = this.Where(x => interesserendeKlassen.Contains(x.Klasse)).ToList();
-
-        var xx = new SchuelerBasisdaten();
-        xx.AddRange(x);
-        Global.ZeileSchreiben(0, "interessierende SchuelerBasisdaten", x.Count().ToString(), null, null);
-
-        return xx;
-    }
-
-    internal Menüeintrag Menüeintrag(int count)
-    {
-        if (count > 0)
-        {
-            return new Menüeintrag(
-                "SchuelerBasisdaten.dat aus Atlantis-SIM.txt und Webuntis-Student_...csv erzeugen",
-                @"ImportFürSchild\SchuelerBasisdaten.dat",
-                @"Beschreibung: Enthält die Basis-Stammdaten der Schüler, insbesondere solche, die für die Statistik relevant sind.",
-                new List<string> { "Nachname", "Vorname", "Geburtsdatum", "Geschlecht", "Status", "PLZ", "Ort", "Straße", "Aussiedler", "1. Staatsang.", "Konfession", "StatistikKrz Konfession", "Aufnahmedatum", "Abmeldedatum Religionsunterricht", "Anmeldedatum Religionsunterricht", "Schulpflicht erf.", "Reform-Pädagogik", "Nr. Stammschule", "Jahr", "Abschnitt", "Jahrgang", "Klasse", "Schulgliederung", "OrgForm", "Klassenart", "Fachklasse", "Noch frei", "Verpflichtung Sprachförderkurs", "Teilnahme Sprachförderkurs", "Einschulungsjahr", "Übergangsempf. JG5", "Jahr Wechsel S1", "1. Schulform S1", "Jahr Wechsel S2", "Förderschwerpunkt", "2. Förderschwerpunkt", "Schwerstbehinderung", "Autist", "LS Schulnr.", "LS Schulform", "Herkunft", "LS Entlassdatum", "LS Jahrgang", "LS Versetzung", "LS Reformpädagogik", "LS Gliederung", "LS Fachklasse", "LS Abschluss", "Abschluss", "Schulnr. neue Schule", "Zuzugsjahr", "Geburtsland Schüler", "Geburtsland Mutter", "Geburtsland Vater", "Verkehrssprache", "Dauer Kindergartenbesuch" });
-        }
-        return null;
-    }
-
-    internal Menüeintrag Menüeintrag()
-    {
-        return new Menüeintrag(
-            "PDF-Zeugnis-Stapel in PDF-Einzeldateien umwandeln und sprechend benennen",
-            @"PDF-Zeugnisse-Einzeln\Protokoll.txt",
-            @"Beschreibung: PDF-Klassensätze aus Atlantis werden nach Name, Datum, Zeugnisart und Klasse durchsucht. Für jedes gefundene Zeugnis wird eine PDF-Datei mit sprechendem Namen erstellt.",
-            new List<string> { "Nachname", "Vorname", "Geburtsdatum", "Klasse", "Zeugnisart", "Datum" }
-            );
+        Map(m => m.Nachname).Name("Nachname");
+        Map(m => m.Vorname).Name("Vorname");
+        Map(m => m.Geburtsdatum).Name("Geburtsdatum");
+        Map(m => m.Geschlecht).Name("Geschlecht");
+        Map(m => m.Status).Name("Status");
+        Map(m => m.PLZ).Name("PLZ");
+        Map(m => m.Ort).Name("Ort");
+        Map(m => m.Straße).Name("Straße");
+        Map(m => m.Aussiedler).Name("Aussiedler");
+        Map(m => m.Staatsangehörigkeit1).Name("1. Staatsang.");
+        Map(m => m.Konfession).Name("Konfession");
+        Map(m => m.StatistikKrzKonfession).Name("StatistikKrz Konfession");
+        Map(m => m.Aufnahmedatum).Name("Aufnahmedatum");
+        Map(m => m.AbmeldedatumReligionsunterricht).Name("Abmeldedatum Religionsunterricht");
+        Map(m => m.AnmeldedatumReligionsunterricht).Name("Anmeldedatum Religionsunterricht");
+        Map(m => m.SchulpflichtErfüllt).Name("Schulpflicht erf.");
+        Map(m => m.ReformPädagogik).Name("Reform-Pädagogik");
+        Map(m => m.NrStammschule).Name("Nr. Stammschule");
+        Map(m => m.Jahr).Name("Jahr");
+        Map(m => m.Abschnitt).Name("Abschnitt");
+        Map(m => m.Jahrgang).Name("Jahrgang");
+        Map(m => m.Klasse).Name("Klasse");
+        Map(m => m.Schulgliederung).Name("Schulgliederung");
+        Map(m => m.OrgForm).Name("OrgForm");
+        Map(m => m.Klassenart).Name("Klassenart");
+        Map(m => m.Fachklasse).Name("Fachklasse");
+        Map(m => m.NochFrei).Name("Noch frei");
+        Map(m => m.VerpflichtungSprachförderkurs).Name("Verpflichtung Sprachförderkurs");
+        Map(m => m.TeilnahmeSprachförderkurs).Name("Teilnahme Sprachförderkurs");
+        Map(m => m.Einschulungsjahr).Name("Einschulungsjahr");
+        Map(m => m.ÜbergangsempfJG5).Name("Übergangsempf. JG5");
+        Map(m => m.JahrWechselS1).Name("Jahr Wechsel S1");
+        Map(m => m.SchulformS1).Name("1. Schulform S1");
+        Map(m => m.JahrWechselS2).Name("Jahr Wechsel S2");
+        Map(m => m.Förderschwerpunkt).Name("Förderschwerpunkt");
+        Map(m => m.Förderschwerpunkt2).Name("2. Förderschwerpunkt");
+        Map(m => m.Schwerstbehinderung).Name("Schwerstbehinderung");
+        Map(m => m.Autist).Name("Autist");
+        Map(m => m.LSSchulnr).Name("LS Schulnr.");
+        Map(m => m.LSSchulform).Name("LS Schulform");
+        Map(m => m.Herkunft).Name("Herkunft");
+        Map(m => m.LSEntlassdatum).Name("LS Entlassdatum");
+        Map(m => m.LSJahrgang).Name("LS Jahrgang");
+        Map(m => m.LSVersetzung).Name("LS Versetzung");
+        Map(m => m.LSReformpädagogik).Name("LS Reformpädagogik");
+        Map(m => m.LSGliederung).Name("LS Gliederung");
+        Map(m => m.LSFachklasse).Name("LS Fachklasse");
+        Map(m => m.LSAbschluss).Name("LS Abschluss");
+        Map(m => m.Abschluss).Name("Abschluss");
+        Map(m => m.SchulnrNeueSchule).Name("Schulnr. neue Schule");
+        Map(m => m.Zuzugsjahr).Name("Zuzugsjahr");
+        Map(m => m.GeburtslandSchüler).Name("Geburtsland Schüler");
+        Map(m => m.GeburtslandMutter).Name("Geburtsland Mutter");
+        Map(m => m.GeburtslandVater).Name("Geburtsland Vater");
+        Map(m => m.Verkehrssprache).Name("Verkehrssprache");
+        Map(m => m.DauerKindergartenbesuch).Name("Dauer Kindergartenbesuch");
     }
 }

@@ -4,13 +4,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 
-public class Marks : List<MarkPerLesson>
+public class Adres : List<Adresse>
 {
-    public Marks()
-    {
-    }
-
-    public Marks(string dateiName, string dateiendung = "*.dat", string delimiter = "|")
+    public Adres(string dateiName, string dateiendung = "*.dat", string delimiter = "|")
     {
         var dateiPfad = Global.CheckFile(dateiName, dateiendung);
 
@@ -38,37 +34,32 @@ public class Marks : List<MarkPerLesson>
         using (var reader = new StreamReader(dateiPfad))
         using (var csv = new CsvReader(reader, config))
         {
-            csv.Context.RegisterClassMap<MarksPerLessonsMap>();
+            csv.Context.RegisterClassMap<AdressenMap>();
             csv.Context.TypeConverterCache.AddConverter<string>(new TrimAndReplaceUnderscoreConverter());
-            var records = csv.GetRecords<MarkPerLesson>();
+            var records = csv.GetRecords<Adresse>();
             this.AddRange(records);
         }
         Global.Ausgaben.Add(new Ausgabe(0, dateiPfad, this.Count().ToString()));
     }
-
-    internal Marks Interessierende(List<string> interessierendeKlassen)
-    {
-        var x = this.Where(x => interessierendeKlassen.Contains(x.Klasse)).ToList();
-        var xx = new Marks();
-        xx.AddRange(x);
-        Global.ZeileSchreiben(0, "interessierende SchuelerBasisdaten", x.Count().ToString(), null, null);
-        return xx;
-    }
 }
 
-public class MarksPerLessonsMap : ClassMap<MarkPerLesson>
+public class AdressenMap : ClassMap<Adresse>
 {
-    public MarksPerLessonsMap()
+    public AdressenMap()
     {
-        Map(m => m.Datum).Name("Datum");
-        Map(m => m.Name).Name("Name");
-        Map(m => m.Klasse).Name("Klasse");
-        Map(m => m.Fach).Name("Fach");
-        Map(m => m.Prüfungsart).Name("Prüfungsart");
-        Map(m => m.Note).Name("Note");
-        Map(m => m.Bemerkung).Name("Bemerkung");
-        Map(m => m.Benutzer).Name("Benutzer");
-        Map(m => m.SchlüsselExtern).Name("Schlüssel (extern)");
-        Map(m => m.Gesamtnote).Name("Gesamtnote");
+        Map(m => m.AdressArt).Name("Adress-Art");
+        Map(m => m.Name1).Name("Name1");
+        Map(m => m.Name2).Name("Name2");
+        Map(m => m.Straße).Name("Straße");
+        Map(m => m.PLZ).Name("PLZ");
+        Map(m => m.Ort).Name("Ort");
+        Map(m => m.Telefonnummer1).Name("Telefonnr. 1");
+        Map(m => m.Telefonnummer2).Name("Telefonnr. 2");
+        Map(m => m.Fax).Name("Fax");
+        Map(m => m.Email).Name("E-Mail");
+        Map(m => m.Branche).Name("Branche");
+        Map(m => m.Bemerkungen).Name("Bemerkungen");
+        Map(m => m.SchILDID).Name("SchILD-ID");
+        Map(m => m.ExterneID).Name("Externe ID");        
     }
 }

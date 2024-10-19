@@ -390,7 +390,7 @@ public class Schülers : List<Schueler>
         //}
     }
 
-    public Schülers(SchuelerBasisdaten schuelerBasisdaten)
+    public Schülers(SchBa schuelerBasisdaten)
     {
         foreach (var schuelerBasisdatum in schuelerBasisdaten)
         {
@@ -403,23 +403,24 @@ public class Schülers : List<Schueler>
             
             this.Add(schueler);
         }
-        Global.ZeileSchreiben(0, "Schüler*innen aus schuelerBasisdaten", this.Count().ToString(), Fehler);
+        
+        Global.Ausgaben.Add(new Ausgabe(0, "Schüler*innen aus schuelerBasisdaten", this.Count().ToString()));
     }
 
-    public Schülers(Students students)
+    public Schülers(Studs students)
     {
         foreach (var student in students)
         {
             Schueler schueler = new Schueler();
-            schueler.Nachname = student.longName;
-            schueler.Vorname = student.foreName;
-            schueler.Klasse = student.klasseName;
-            schueler.Straße = student.addressStreet;
-            schueler.Plz = student.addressPostCode;
-            schueler.Wohnort = student.addressCity;
+            schueler.Nachname = student.LongName;
+            schueler.Vorname = student.ForeName;
+            schueler.Klasse = student.KlasseName;
+            schueler.Straße = student.AddressStreet;
+            schueler.Plz = student.AddressPostCode;
+            schueler.Wohnort = student.AddressCity;
             this.Add(schueler);
         }
-        Global.ZeileSchreiben(0, "Schüler*innen aus students_", this.Count().ToString(), Fehler);
+        Global.Ausgaben.Add(new Ausgabe(0, "Schüler*innen aus students_", this.Count().ToString()));
     }
 
     private List<string> GetKopfzeile()
@@ -489,7 +490,7 @@ public class Schülers : List<Schueler>
     //    return schuelerleistungsdaten;
     //}
 
-    public Schülers GetIntessierendeSchuelers(Datei zielDatei)
+    public Schülers Interessierende(Datei zielDatei)
     {
         var configuration = new ConfigurationBuilder().AddJsonFile("appSettings.json", optional: false, reloadOnChange: true).Build();
         var klassen = configuration["Klassen"];
