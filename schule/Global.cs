@@ -65,75 +65,66 @@ public static class Global
         var mitte = " .".PadRight(Math.Max(3, punkte), '.') + " ";
         Console.WriteLine("".PadRight(linkerAbstand + 2) + linkeSeite + mitte + rechteSeite);
 
-        if (fehler != null)
+
+        if (hinweise != null)
         {
-            if (hinweise != null)
+            int leftPad = 5;
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            for (int i = 0; i < hinweise.Length; i++)
             {
-                int leftPad = 5;
+                // Text in Wörter aufteilen
+                string[] wörter = hinweise[i].Split(' ');
+                StringBuilder aktuelleZeile = new StringBuilder();
+                List<string> zeilen = new List<string>();
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                for (int i = 0; i < hinweise.Length; i++)
+                foreach (var wort in wörter)
                 {
-                    // Text in Wörter aufteilen
-                    string[] wörter = hinweise[i].Split(' ');
-                    StringBuilder aktuelleZeile = new StringBuilder();
-                    List<string> zeilen = new List<string>();
-
-                    foreach (var wort in wörter)
+                    if (aktuelleZeile.Length + wort.Length + 1 > gesamtbreite - leftPad)
                     {
-                        if (aktuelleZeile.Length + wort.Length + 1 > gesamtbreite - leftPad)
-                        {
-                            zeilen.Add(aktuelleZeile.ToString());
-                            aktuelleZeile.Clear();
-                            //aktuelleZeile.Append(' ', leftPad); // Einrücken um den Wert leftPad
-                        }
-
-                        if (aktuelleZeile.Length > 0)
-                        {
-                            aktuelleZeile.Append(" ");
-                        }
-                        aktuelleZeile.Append(wort);
+                        zeilen.Add(aktuelleZeile.ToString());
+                        aktuelleZeile.Clear();
+                        //aktuelleZeile.Append(' ', leftPad); // Einrücken um den Wert leftPad
                     }
 
                     if (aktuelleZeile.Length > 0)
                     {
-                        zeilen.Add(aktuelleZeile.ToString());
+                        aktuelleZeile.Append(" ");
                     }
+                    aktuelleZeile.Append(wort);
+                }
 
-                    // Zeilen ausgeben
+                if (aktuelleZeile.Length > 0)
+                {
+                    zeilen.Add(aktuelleZeile.ToString());
+                }
 
-                    if (i == 0)
+                // Zeilen ausgeben
+
+                if (i == 0)
+                {
+                    for (int j = 0; j < zeilen.Count(); j++)
                     {
-                        for (int j = 0; j < zeilen.Count(); j++)
-                        {
-                            Console.WriteLine("".PadRight(leftPad - 2, ' ') + zeilen[j]);
-                        }
-                    }
-                    else
-                    {
-                        for (int j = 0; j < zeilen.Count(); j++)
-                        {
-                            if (j == 0)
-                            {
-                                Console.WriteLine(i.ToString().PadLeft(leftPad, ' ') + ". " + zeilen[j]);
-                            }
-                            else
-                            {
-                                Console.WriteLine("".PadLeft(leftPad, ' ') + "  " + zeilen[j]);
-                            }
-
-                        }
+                        Console.WriteLine("".PadRight(leftPad - 2, ' ') + zeilen[j]);
                     }
                 }
-                Console.ForegroundColor = ConsoleColor.White;
+                else
+                {
+                    for (int j = 0; j < zeilen.Count(); j++)
+                    {
+                        if (j == 0)
+                        {
+                            Console.WriteLine(i.ToString().PadLeft(leftPad, ' ') + ". " + zeilen[j]);
+                        }
+                        else
+                        {
+                            Console.WriteLine("".PadLeft(leftPad, ' ') + "  " + zeilen[j]);
+                        }
+
+                    }
+                }
             }
-            else
-            {
-                Console.WriteLine("");
-                Console.WriteLine("");
-                Console.WriteLine(fehler.ToString());
-                Console.ReadKey();
-            }
+            Console.ForegroundColor = ConsoleColor.White;
         }
     }
 

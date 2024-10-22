@@ -9,6 +9,7 @@ using static Global;
 Console.WindowHeight = 40;
 Global.DisplayHeader();
 Global.Ausgaben = new Ausgaben();
+Schülers schülers = new Schülers(@"ExportAusSchild\SchildSchuelerExport", "*.txt");
 SchAd schAd = new SchAd(@"ExportAusSchild\SchuelerAdressen");
 Adres adres = new Adres(@"ExportAusSchild\Adressen");
 Kurse kurse = new Kurse(@"ExportAusSchild\Kurse");
@@ -24,11 +25,14 @@ StgrS stgrS = new StgrS(@"ExportAusWebuntis\StudentgroupStudents", "*.csv", "\t"
 Studs studs = new Studs(@"ExportAusWebuntis\Student_", "*.csv", "\t");
 AbsSt absSt = new AbsSt(@"ExportAusWebuntis\AbsencePerStudent", "*.csv", "\t");
 Simss simss = new Simss(@"ExportAusAtlantis\sim.csv", "*.csv", ";");
-AllAd allAd = new AllAd(@"ExportAusAtlantis\AlleAdressen.csv", "*.csv", ";");
+AllAd allAd = new AllAd(@"ExportAusAtlantis\Adressen.csv", "*.csv", ";");
 
 // Schüler generieren
-Schülers schus = new Schülers(schBa);
-if (schus.Count == 0) { schus = new Schülers(studs); }
+if (schülers.Count == 0)
+{
+    schülers = new Schülers(studs);
+}
+
 
 do
 {   
@@ -38,14 +42,14 @@ do
          new Menüeintrag("WebuntisImpo", schBa.Count + schAd.Count + adres.Count),
          new Menüeintrag("SchuelerLeis", schBa.Count + expLe.Count),
          new Menüeintrag("SchuelerTeil", schBa.Count + marks.Count()),
-         new Menüeintrag("SchuelerAdre", allAd.Count + schBa.Count()),
-         new Menüeintrag("SchuelerTele", allAd.Count + schBa.Count()),
+         new Menüeintrag("Klassen", schBa.Count()),
          new Menüeintrag("PDF-Kennwort"),
+         new Menüeintrag("NFS365"),
     });
 
     do
     {
-        Datei zielDatei = new Datei(menüauswahl);
+        List<Datei> z = new List<Datei>() { new Datei(menüauswahl) };
 
         if (menüauswahl.Titel.Contains("PDF-Dateien auf dem Desktop mit Kennwort"))
         {
@@ -53,7 +57,7 @@ do
             break;
         }
 
-        var iSchuS = schus.Interessierende(zielDatei); if (iSchuS.Keine()) { break; }
+        var iSchuS = schülers.Interessierende(z[0]); if (iSchuS.Keine()) { break; }
         var iKlass = iSchuS.Select(x => x.Klasse).Distinct().ToList();
         var iSimss = simss.Interessierende(iKlass);
         var iSchBa = schBa.Interessierende(iKlass);
@@ -61,40 +65,57 @@ do
         var iAbsSt = absSt.Interessierende(iKlass);
         var iMarks = marks.Interessierende(iKlass);
         var iStgrS = stgrS.Interessierende(iKlass);
-        var iSchAd = schAd.Interessierende(iSchuS);        
-                
-        if (zielDatei.Titel.StartsWith("SchuelerBasisdaten") && iSimss.Count() > 0)
-            zielDatei.Zeilen.AddRange(simss.GetSchuelerBasisdaten(iSchuS));
-        if (zielDatei.Titel.StartsWith("SchuelerAdressen") && iSimss.Count() > 0)
-            zielDatei.Zeilen.AddRange(allAd.GetSchuelerAdressen(iSchuS));
-        if (zielDatei.Titel.StartsWith("SchuelerTelefonn") && iSimss.Count() > 0)
-            zielDatei.Zeilen.AddRange(allAd.GetSchuelerTelefonnummern(iSchuS));
-        if (zielDatei.Titel.StartsWith("SchuelerLeistungsd") && iExpLe.Count() > 0)
-            zielDatei.Zeilen.AddRange(schBa.GetLeistungsdaten(iAbsSt, iSchuS, iExpLe, iMarks, iStgrS));
-        if (zielDatei.Titel.StartsWith("SchuelerTeilleistu") && iSchuS.Count() > 0)
-            zielDatei.Zeilen.AddRange(schBa.GetSchuelerTeilleistung(iSchAd, iSchAd));
+        var iSchAd = schAd.Interessierende(iSchuS);
 
-        //if (zielDatei.Titel.StartsWith("Kopien von PDF-Dat") && iSchuS.Count() > 0) { 
-        //    var pdfdateien = new PdfDateien("PDF-Zeugnisse", "PDF-Zeugnisse-Einzeln", schus);}
-
-
-        //Dateien vergleichen
-        string vergleichsdateiDateiPfad = zielDatei.CheckFile();
-
-        if (vergleichsdateiDateiPfad != null && vergleichsdateiDateiPfad.ToLower().Contains("export"))
+        if (z[0].Titel.StartsWith("SchuelerBasisdaten") && iSimss.Count() > 0)
         {
-            Global.ZeileSchreiben(0, vergleichsdateiDateiPfad, "existiert", null);
-
-            Datei vergleichsdatei = new Datei();// new Datei(vergleichsdateiDateiPfad);            
-
-            Global.ZeileSchreiben(0, vergleichsdateiDateiPfad, vergleichsdatei.Zeilen.Count().ToString(), null);
-
-            if (zielDatei.DateienVergleichen(vergleichsdatei)) { break; }
+            z[0].Zeilen.AddRange(simss.GetSchuelerBasisdaten(iSchuS));
+            var zieldatei = new Datei("ImportFürSchILD\\SchuelerAdressen.dat", "", new List<string>() { "Nachname", "Vorname", "Geburtsdatum", "Adressart", "Name1", "Name2", "Straße", "PLZ", "Ort", "1. Tel.-Nr.", "2. Tel.-Nr.", "E-Mail", "Betreuer Nachname", "Betreuer Vorname", "Betreuer Anrede", "Betreuer Tel.-Nr.", "Betreuer E-Mail", "Betreuer Abteilung", "Vertragsbeginn", "Vertragsende", "Fax-Nr.", "Bemerkung", "Branche", "Zusatz 1", "Zusatz 2", "SchILD-Adress-ID", "externe Adress-ID" });
+            zieldatei.Zeilen.AddRange(allAd.GetSchuelerAdressen(iSchuS));
+            z.Add(zieldatei);
+            zieldatei = new Datei("ImportFürSchILD\\SchuelerTelefonnummern.dat", "", new List<string>() { "Nachname", "Vorname", "Geburtsdatum", "Telefonnr.", "Art" });
+            zieldatei.Zeilen.AddRange(allAd.GetSchuelerTelefonnummern(iSchuS));
+            z.Add(zieldatei);
+            zieldatei = new Datei("ImportFürSchILD\\SchuelerZusatzdaten.dat", "", new List<string>() { "Nachname", "Vorname", "Geburtsdatum", "Namenszusatz", "Geburtsname", "Geburtsort", "Ortsteil", "Telefon-Nr.", "E-Mail", "2. Staatsang.", "Externe ID-Nr", "Sportbefreiung", "Fahrschülerart", "Haltestelle", "Einschulungsart", "Entlassdatum", "Entlassjahrgang", "Datum Schulwechsel", "Bemerkungen", "BKAZVO", "BeginnBildungsgang", "Anmeldedatum", "Bafög", "EP-Jahre", "Fax/Mobilnr", "Ausweisnummer", "schulische E-Mail" });
+            zieldatei.Zeilen.AddRange(allAd.GetSchuelerZusatzdaten(iSchuS));
+            z.Add(zieldatei);
+            zieldatei = new Datei("ImportFürSchILD\\SchuelerErzieher.dat", "", new List<string>() { "Nachname", "Vorname", "Geburtsdatum", "Erzieherart", "Anrede 1.Person", "Titel 1.Person", "Nachname 1.Person", "Vorname 1.Person", "Anrede 2.Person", "Titel 2.Person", "Nachname 2.Person", "Vorname 2.Person", "Straße", "PLZ", "Ort", "Ortsteil", "E-Mail", "Anschreiben" });
+            zieldatei.Zeilen.AddRange(allAd.GetSchuelerErzieher(iSchuS));
+            z.Add(zieldatei);
         }
 
-        zielDatei.Erstellen();
-        
+        if (z[0].Titel.StartsWith("SchuelerLeistungsd") && iExpLe.Count() > 0)
+            z[0].Zeilen.AddRange(schBa.GetLeistungsdaten(iAbsSt, iSchuS, iExpLe, iMarks, iStgrS));
+        if (z[0].Titel.StartsWith("SchuelerTeilleistu") && iSchuS.Count() > 0)
+            z[0].Zeilen.AddRange(schBa.GetSchuelerTeilleistung(iSchAd, iSchAd));
+        if (z[0].Titel.StartsWith("Kopien von PDF-Dateien") && iSchuS.Count() > 0)
+        {
+            var pdfdateien = new PdfDateien("PDF-Zeugnisse", "PDF-Zeugnisse-Einzeln", schülers);
+        }
 
+        if (z[0].Titel.StartsWith("Importdatei für Netman") && iSchuS.Count() > 0)
+        {
+            z[0].Zeilen.AddRange(schBa.GetNfsUnd365(iSchuS));
+        }
+
+        //Dateien vergleichen
+
+        foreach (var zielDatei in z)
+        {
+            string vergleichsdateiDateiPfad = zielDatei.CheckFile();
+
+            //if (vergleichsdateiDateiPfad != null && vergleichsdateiDateiPfad.ToLower().Contains("export"))
+            //{
+            //    Global.ZeileSchreiben(0, vergleichsdateiDateiPfad, "existiert", null);
+
+            //    Datei vergleichsdatei = new Datei();// new Datei(vergleichsdateiDateiPfad);            
+
+            //    Global.ZeileSchreiben(0, vergleichsdateiDateiPfad, vergleichsdatei.Zeilen.Count().ToString(), null);
+
+            //    if (zielDatei.DateienVergleichen(vergleichsdatei)) { break; }
+            //}
+            zielDatei.Erstellen();
+        }
     } while (true);
     
     Global.DisplayHeader();

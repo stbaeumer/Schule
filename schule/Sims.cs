@@ -112,7 +112,7 @@ public class Simss : List<Sim>
                     zeile.Add(sim.Lsversetz35);             // LS Versetzung      0 : Ja,  1: Nein, 2: Freiw.Rücktritt
                     zeile.Add(sim.Lsreformpdg31);           // LS Reformpädagogik
                     zeile.Add(sim.LSGliederung28);          // LS Gliederung
-                    zeile.Add(sim.LSFachklasse29);         // LS Fachklasse
+                    zeile.Add(sim.LSFachklasse29);          // LS Fachklasse
                     zeile.Add("");                          // LS Abschluss
                     zeile.Add(sim.Berufsabschluss65);       // Abschluss
                     zeile.Add("");                          // SchulnrNeueSchule

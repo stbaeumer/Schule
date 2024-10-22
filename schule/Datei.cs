@@ -604,7 +604,7 @@ public class Datei
 
                                 zeileString += zeile[i] + "|";
                             }
-                            writer.WriteLine(zeileString.TrimEnd('|'));
+                            writer.WriteLine(zeileString.Substring(0,zeileString.Length - 1));
                         }
                     }
                     catch (Exception ex)
@@ -615,7 +615,7 @@ public class Datei
                     {
                         Global.ZeileSchreiben(0, DateiPfad + " Zeilen", Zeilen.Count().ToString(), Fehler);
                         Console.ForegroundColor = ConsoleColor.Magenta;
-                        Global.ZeileSchreiben(0, DateiPfad + "neu erstellt", "ok", Fehler);
+                        Global.ZeileSchreiben(0, DateiPfad + " neu erstellt", "ok", Fehler);
                         Console.ForegroundColor = ConsoleColor.White;
                         Process.Start("notepad.exe", DateiPfad);
                     }

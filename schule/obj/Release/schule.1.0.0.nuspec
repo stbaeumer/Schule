@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>schule</id>
+    <version>1.0.0</version>
+    <authors>schule</authors>
+    <description>Package Description</description>
+    <repository type="git" commit="d02d098501e1bcc62c3c5ab51bf595b853426707" />
+    <dependencies>
+      <group targetFramework="net8.0">
+        <dependency id="ClosedXML" version="0.104.1" exclude="Build,Analyzers" />
+        <dependency id="CsvHelper" version="33.0.1" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Configuration" version="8.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Configuration.Json" version="8.0.0" exclude="Build,Analyzers" />
+        <dependency id="PDFsharp" version="6.1.1" exclude="Build,Analyzers" />
+        <dependency id="System.Data.Odbc" version="8.0.0" exclude="Build,Analyzers" />
+        <dependency id="iTextSharp" version="5.5.13.4" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="U:\Repos\Schule\schule\bin\Release\net8.0\schule.runtimeconfig.json" target="lib\net8.0\schule.runtimeconfig.json" />
+    <file src="U:\Repos\Schule\schule\bin\Release\net8.0\schule.dll" target="lib\net8.0\schule.dll" />
+  </files>
+</package>

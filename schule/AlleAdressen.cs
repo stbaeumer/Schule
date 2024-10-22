@@ -50,42 +50,87 @@ public class AllAd : List<AlleAdresse>
         foreach (var schueler in iSchuS)
         {
             var ooo = this
-                .Where(x => x.Nachname == schueler.Nachname
+                .Where(x => x.SchülerNachname == schueler.Nachname
                     && x.SchülerVorname == schueler.Vorname
+                    && x.SchülerGeburtsdatum == schueler.Geburtsdatum
                     ).ToList();
-                        
-            Zeile zeile = new Zeile();
 
             foreach (var item in ooo)
             {
-            zeile.Add(schueler.Nachname);           // Nachname 
+                Zeile zeile = new Zeile();
+                zeile.Add(schueler.Nachname);           // Nachname 
+                zeile.Add(schueler.Vorname);            // Vorname 
+                zeile.Add(schueler.Geburtsdatum);       // Geburtsdatum
+                zeile.Add(item.AdresseTypAdresse == "0" ? "Schüler/-in" : item.AdresseTypAdresse == "V" ? "Vater" : item.AdresseTypAdresse == "M" ? "Mutter" : "Betrieb");               //Adressart Als Klartext, z.B. "Betrieb" 
+                zeile.Add("");                         //Name1
+                zeile.Add("");                         //Name2
+                zeile.Add(item.AdresseStraße);                         //Straße
+                zeile.Add(item.AdressePlz);                         //PLZ
+                zeile.Add(item.AdresseOrt);                         //Ort
+                zeile.Add(item.AdresseTelefon1);                         //1. Tel.-Nr.
+                zeile.Add(item.AdresseTelefon2);                         //2. Tel.-Nr.
+                zeile.Add(item.AdresseEmail);                         //E-Mail
+                zeile.Add(item.AdresseName1);                         //Betreuer Nachname
+                zeile.Add(item.AdresseName2);                         //Betreuer Vorname
+                zeile.Add(item.BetriebAnrede);                         //Betreuer Anrede
+                zeile.Add("");                         //Betreuer Tel.-Nr.
+                zeile.Add("");                         //Betreuer E-Mail
+                zeile.Add("");                         //Betreuer Abteilung
+                zeile.Add("");                         //Vertragsbeginn
+                zeile.Add("");                         //Vertragsende
+                zeile.Add("");                         //Fax-Nr.
+                zeile.Add("");                         //Bemerkung
+                zeile.Add("");                         //Branche
+                zeile.Add("");                         //Zusatz 1
+                zeile.Add("");                         //Zusatz 2
+                zeile.Add("");                         //SchILD-Adress-ID
+                zeile.Add("");                         //externe Adress-ID
+                z.Add(zeile);
+            }
+        }
+        return z;
+    }
+
+    internal IEnumerable<Zeile> GetSchuelerErzieher(Schülers iSchuS)
+    {
+        List<Zeile> z = new List<Zeile>();
+
+        foreach (var schueler in iSchuS)
+        {
+            var adressenDesSuS = this.Where(x => schueler.Nachname == x.SchülerNachname && schueler.Vorname == x.SchülerVorname && schueler.Geburtsdatum == x.SchülerGeburtsdatum).ToList();
+
+            Zeile zeile = new Zeile();
+
+            zeile.Add(schueler.Nachname);           // Nachname
             zeile.Add(schueler.Vorname);            // Vorname 
             zeile.Add(schueler.Geburtsdatum);       // Geburtsdatum
-            zeile.Add("");                         //Adressart
-            zeile.Add("");                         //Name1
-            zeile.Add("");                         //Name2
-            zeile.Add("");                         //Straße
-            zeile.Add("");                         //PLZ
-            zeile.Add("");                         //Ort
-            zeile.Add("");                         //1. Tel.-Nr.
-            zeile.Add("");                         //2. Tel.-Nr.
-            zeile.Add("");                         //E-Mail
-            zeile.Add("");                         //Betreuer Nachname
-            zeile.Add("");                         //Betreuer Vorname
-            zeile.Add("");                         //Betreuer Anrede
-            zeile.Add("");                         //Betreuer Tel.-Nr.
-            zeile.Add("");                         //Betreuer E-Mail
-            zeile.Add("");                         //Betreuer Abteilung
-            zeile.Add("");                         //Vertragsbeginn
-            zeile.Add("");                         //Vertragsende
-            zeile.Add("");                         //Fax-Nr.
-            zeile.Add("");                         //Bemerkung
-            zeile.Add("");                         //Branche
-            zeile.Add("");                         //Zusatz 1
-            zeile.Add("");                         //Zusatz 2
-            zeile.Add("");                         //SchILD-Adress-ID
-            zeile.Add("");                         //externe Adress-ID
+            zeile.Add("Eltern");
+            foreach (var item in adressenDesSuS)
+            {
+                var x = item.AdresseTypAdresse == "0" ? "Schüler/-in" : item.AdresseTypAdresse == "V" ? "Vater" : item.AdresseTypAdresse == "M" ? "Mutter" : "Betrieb";               //Adressart Als Klartext, z.B. "Betrieb" 
+
+                if (x == "Mutter")
+                {
+                    zeile.Add(x);                             // Erzieherart (not available in the provided class)
+                    zeile.Add(item.SchülerAnrede == "F" ? "Frau" : "Herr");            // Anrede 1.Person
+                    zeile.Add(item.AdresseTitel);             // Titel 1.Person
+                    zeile.Add(item.AdresseName1);             // Nachname 1.Person
+                    zeile.Add(item.AdresseName2);             // Vorname 1.Person
+                    zeile.Add(item.AdresseStraße);            // Straße
+                    zeile.Add(item.AdressePlz);               // PLZ
+                    zeile.Add(item.AdresseOrt);               // Ort
+                    zeile.Add(item.BetriebOrtsteil);          // Ortsteil
+                    zeile.Add(item.AdresseEmail);    
+                }
+                if(x== "Vater")
+                {
+                    zeile.Add(item.SchülerAnrede == "H" ? "Herr" : "Frau");            // Anrede 2.Person
+                    zeile.Add(item.AdresseTitel);             // Titel 2.Person
+                    zeile.Add(item.AdresseName1);          // Nachname 2.Person
+                    zeile.Add(item.AdresseName2);           // Vorname 2.Person
+                }
             }
+            z.Add(zeile);
         }
         return z;
     }
@@ -97,19 +142,88 @@ public class AllAd : List<AlleAdresse>
         foreach (var schueler in iSchuS)
         {
             var ooo = this
-                .Where(x => x.Nachname == schueler.Nachname
+                .Where(x => x.SchülerNachname == schueler.Nachname
                     && x.SchülerVorname == schueler.Vorname
+                    && x.SchülerGeburtsdatum == schueler.Geburtsdatum
                     ).ToList();
-
-            Zeile zeile = new Zeile();
 
             foreach (var item in ooo)
             {
+                Zeile zeile = new Zeile();
+
+                var x = item.AdresseTypAdresse == "0" ? "Schüler/-in" : item.AdresseTypAdresse == "V" ? "Vater" : item.AdresseTypAdresse == "M" ? "Mutter" : "Betrieb";               //Adressart Als Klartext, z.B. "Betrieb" 
+
                 zeile.Add(schueler.Nachname);           // Nachname
                 zeile.Add(schueler.Vorname);            // Vorname 
                 zeile.Add(schueler.Geburtsdatum);       // Geburtsdatum
-                zeile.Add("");                          // Telefonnr. 
-                zeile.Add("");                          // Art 
+                zeile.Add(item.AdresseTelefon1);        // Telefonnr. 
+                zeile.Add(x);                           // Art Beschreibung der Telefonnr, z.B. "Eltern", "Handy Schüler", "Büro Vater", "Handy Mutter" usw. 
+                if (item.AdresseTelefon1 != "")
+                {
+                    z.Add(zeile);
+                }
+                
+                if (item.AdresseTelefon2 != null && item.AdresseTelefon2 != "")
+                {
+                    zeile = new Zeile();
+                    zeile.Add(schueler.Nachname);           // Nachname
+                    zeile.Add(schueler.Vorname);            // Vorname 
+                    zeile.Add(schueler.Geburtsdatum);       // Geburtsdatum
+                    zeile.Add(item.AdresseTelefon2);                          // Telefonnr. 
+                                                                              // Art Beschreibung der Telefonnr, z.B. "Eltern", "Handy Schüler", "Büro Vater", "Handy Mutter" usw. 
+                    zeile.Add(x);
+                    if (item.AdresseTelefon2 != "")
+                    {
+                        z.Add(zeile);
+                    }
+                }
+            }
+        }
+        return z;
+    }
+
+    internal IEnumerable<Zeile> GetSchuelerZusatzdaten(Schülers iSchuS)
+    {
+        List<Zeile> z = new List<Zeile>();
+
+        foreach (var schueler in iSchuS)
+        {
+            var ooo = this
+                .Where(x => x.SchülerNachname == schueler.Nachname
+                    && x.SchülerVorname == schueler.Vorname
+                    && x.SchülerGeburtsdatum == schueler.Geburtsdatum
+                    ).ToList();
+
+            foreach (var item in ooo)
+            {
+                Zeile zeile = new Zeile();
+                zeile.Add(schueler.Nachname);           // Nachname
+                zeile.Add(schueler.Vorname);            // Vorname 
+                zeile.Add(schueler.Geburtsdatum);       // Geburtsdatum
+                zeile.Add(item.AdresseTelefon1);        // Nachname|Vorname|Geburtsdatum|Namenszusatz|Geburtsname|Geburtsort|Ortsteil|
+                                                        // zeile.Add(item.SchülerGeburtsname);       // Geburtsname
+                zeile.Add(item.SchülerGeburtsort);        // Geburtsort
+                                                          // Ortsteil (not available in the provided class)
+                zeile.Add(item.AdresseTelefon1);          // Telefon-Nr.
+                zeile.Add(item.AdresseEmail);             // E-Mail
+                zeile.Add(item.SchülerStaat);             // 2. Staatsang.
+                zeile.Add(item.AdresseExterneID);         // Externe ID-Nr
+                                                          // Sportbefreiung (not available in the provided class)
+                                                          // Fahrschülerart (not available in the provided class)
+                                                          // Haltestelle (not available in the provided class)
+                                                          // Einschulungsart (not available in the provided class)
+                                                          // Entlassdatum (not available in the provided class)
+                                                          // Entlassjahrgang (not available in the provided class)
+                                                          // Datum Schulwechsel (not available in the provided class)
+                                                          // Bemerkungen (not available in the provided class)
+                                                          // BKAZVO (not available in the provided class)
+                                                          // BeginnBildungsgang (not available in the provided class)
+                                                          // Anmeldedatum (not available in the provided class)
+                                                          // Bafög (not available in the provided class)
+                                                          // EP-Jahre (not available in the provided class)
+                zeile.Add(item.AdresseTelefon2);          // Fax/Mobilnr
+                zeile.Add(item.AdresseAusweisnummer);     // Ausweisnummer
+                zeile.Add(item.AdresseEmailKomplett);     // schulische E-Mail
             }
         }
         return z;
@@ -121,178 +235,67 @@ public class AlleAdressenMap : ClassMap<AlleAdresse>
     public AlleAdressenMap()
     {
         Map(m => m.LfdNr).Name("Lfd Nr");
-        Map(m => m.Nachname).Name("Nachname");
-        Map(m => m.Name2DerAdresse).Name("Name 2 der Adresse");
-        Map(m => m.Name3DerAdresse).Name("Name 3 der Adresse");
-        Map(m => m.GebäudeOrt).Name("Gebäude: Ort");
-        Map(m => m.GebäudePlz).Name("Gebäude: Plz");
-        Map(m => m.GebäudeStraße).Name("Gebäude: Straße");
-        Map(m => m.Abrechnungsmodus).Name("Abrechnungsmodus");
-        Map(m => m.Abteilung).Name("Abteilung");
-        Map(m => m.AdresseQuellKennzeichen).Name("Adresse Quell-Kennzeichen");
-        Map(m => m.AdresseKategorien).Name("Adresse-Kategorien");
-        Map(m => m.AdresseBerufLangtext).Name("Adresse: Beruf (Langtext)");
-        Map(m => m.Adresstyp).Name("Adresstyp");
-        Map(m => m.AkadTitel).Name("akad. Titel");
-        Map(m => m.Aktiv).Name("aktiv");
-        Map(m => m.AnredeAuflösung).Name("Anrede (Auflösung)");
-        Map(m => m.Anredeform).Name("Anredeform");
-        Map(m => m.Anredetext).Name("Anredetext");
-        Map(m => m.Ansprechpartner).Name("Ansprechpartner");
-        Map(m => m.AnzahlKopien).Name("Anzahl Kopien");
-        Map(m => m.Arbeitgeber).Name("Arbeitgeber");
-        Map(m => m.ArtDerKommunikation).Name("Art der Kommunikation");
-        Map(m => m.ArtDerKommunikationAuflösung).Name("Art der Kommunikation (Auflösung)");
-        Map(m => m.ArtDerLastschriftausführungSEPA).Name("Art der Lastschriftausführung (SEPA)");
-        Map(m => m.Austrittsdatum).Name("Austrittsdatum");
-        Map(m => m.Ausweisnummer).Name("Ausweisnummer");
-        Map(m => m.Ausweisnummer2).Name("Ausweisnummer 2");
-        Map(m => m.Ausweisnummer3).Name("Ausweisnummer 3");
-        Map(m => m.Ausweisnummer4).Name("Ausweisnummer 4");
-        Map(m => m.Belegdruck).Name("Belegdruck");
-        Map(m => m.BemerkungZurAdresse).Name("Bemerkung zur Adresse");
-        Map(m => m.Beruf).Name("Beruf");
-        Map(m => m.Briefadresse).Name("Briefadresse");
-        Map(m => m.DatumDerErteilungDesSEPAMandats).Name("Datum der Erteilung des SEPA-Mandats");
-        Map(m => m.DatumErsteBuchung).Name("Datum erste Buchung");
-        Map(m => m.DatumLetzteBuchung).Name("Datum letzte Buchung");
-        Map(m => m.DebitorSaldo).Name("Debitor Saldo");
-        Map(m => m.DebitorGruppe).Name("Debitor-Gruppe");
-        Map(m => m.DebitorDebitornummer).Name("Debitor: Debitornummer");
-        Map(m => m.EmailKomplett).Name("E-Mail (komplett)");
-        Map(m => m.EmailVertraulich).Name("E-Mail (vertraulich)");
-        Map(m => m.EmailAdresse).Name("E-Mail-Adresse");
-        Map(m => m.EmailVersandAktiv).Name("E-Mail-Versand aktiv");
-        Map(m => m.Eintrittsdatum).Name("Eintrittsdatum");
-        Map(m => m.ExterneID).Name("Externe ID");
-        Map(m => m.Familienstand).Name("Familienstand");
-        Map(m => m.Geburtsdatum).Name("Geburtsdatum");
-        Map(m => m.Gehalt).Name("Gehalt");
-        Map(m => m.Gemeindekennzeichen).Name("Gemeindekennzeichen");
-        Map(m => m.Hausnummer).Name("Hausnummer");
-        Map(m => m.Herkunftsland).Name("Herkunftsland");
-        Map(m => m.HomepageURL).Name("Homepage (URL)");
-        Map(m => m.IBAN).Name("IBAN");
-        Map(m => m.Kalenderjahr).Name("Kalenderjahr");
-        Map(m => m.KennzeichenDerHauptadresse).Name("Kennzeichen der Hauptadresse");
-        Map(m => m.Kontakt1JN).Name("Kontakt 1 (J/N)");
-        Map(m => m.Kontakt2JN).Name("Kontakt 2 (J/N)");
-        Map(m => m.Kontakt3JN).Name("Kontakt 3 (J/N)");
-        Map(m => m.Kontoinhaber).Name("Kontoinhaber");
-        Map(m => m.Korrespondenzsprache).Name("Korrespondenzsprache");
-        Map(m => m.LehrerSuchbegriff).Name("Lehrer: Suchbegriff");
-        Map(m => m.Länderkennzeichen).Name("Länderkennzeichen");
-        Map(m => m.Mahnkennzeichen).Name("Mahnkennzeichen");
-        Map(m => m.Mitgliedstyp).Name("Mitgliedstyp");
-        Map(m => m.NameDesBankinstituts).Name("Name des Bankinstituts");
-        Map(m => m.NummerFürSMSVersand).Name("Nummer für SMS-Versand");
-        Map(m => m.NächstRechStellung).Name("nächst Rech.Stellung");
-        Map(m => m.Ortsteil).Name("Ortsteil");
-        Map(m => m.Personalausweisnummer).Name("Personalausweisnummer");
-        Map(m => m.Postfach).Name("Postfach");
-        Map(m => m.PostleitzahlDerPostfachadresse).Name("Postleitzahl der Postfachadresse");
-        Map(m => m.Rechnungsrythmus).Name("Rechnungsrythmus");
-        Map(m => m.SaldoAktuellZum).Name("Saldo (aktuell) zum");
-        Map(m => m.SchuleAmtlicheBezeichnung1).Name("Schule: Amtliche Bezeichnung 1");
-        Map(m => m.SchuleAmtlicheBezeichnung2).Name("Schule: Amtliche Bezeichnung 2");
-        Map(m => m.SchuleAmtlicheBezeichnung3).Name("Schule: Amtliche Bezeichnung 3");
-        Map(m => m.SchuleEmailAdresse).Name("Schule: E-Mail-Adresse");
-        Map(m => m.SchuleGenitivName).Name("Schule: Genitiv Name");
-        Map(m => m.SchuleGläubigerIdentifikationsnummer).Name("Schule: Gläubiger-Identifikationsnummer");
-        Map(m => m.SchuleHomepage).Name("Schule: Homepage");
-        Map(m => m.SchuleOrt).Name("Schule: Ort");
-        Map(m => m.SchuleOrtsteil).Name("Schule: Ortsteil");
-        Map(m => m.SchulePlz).Name("Schule: Plz");
-        Map(m => m.SchuleSchulartAuflösung).Name("Schule: Schulart (Auflösung)");
-        Map(m => m.SchuleSchulname).Name("Schule: Schulname");
-        Map(m => m.SchuleSchulname2).Name("Schule: Schulname 2");
-        Map(m => m.SchuleSchulname3).Name("Schule: Schulname 3");
-        Map(m => m.SchuleSchulnummer).Name("Schule: Schulnummer");
-        Map(m => m.SchuleStraße).Name("Schule: Straße");
-        Map(m => m.SchuleTelefax).Name("Schule: Telefax");
-        Map(m => m.SchuleTelefon1).Name("Schule: Telefon 1");
-        Map(m => m.SchuleTelefon2).Name("Schule: Telefon 2");
-        Map(m => m.SchuleZeugniskopfzeile1).Name("Schule: Zeugniskopfzeile 1");
-        Map(m => m.SchuleZeugniskopfzeile2).Name("Schule: Zeugniskopfzeile 2");
-        Map(m => m.SchuleZeugniskopfzeile3).Name("Schule: Zeugniskopfzeile 3");
-        Map(m => m.SchülerAnrede).Name("Schüler: Anrede");
-        Map(m => m.SchülerAusgetretenJN).Name("Schüler: Ausgetreten (J/N)");
-        Map(m => m.SchülerBekenntnis).Name("Schüler: Bekenntnis");
-        Map(m => m.SchülerGeschlecht).Name("Schüler: Geschlecht");
+        Map(m => m.AdresseName1).Name("Adresse: Name 1");
+        Map(m => m.AdresseName2).Name("Adresse: Name 2");
+        Map(m => m.KlasseKlassenbezeichnung).Name("Klasse: Klassenbezeichnung");
         Map(m => m.SchülerNachname).Name("Schüler: Nachname");
-        Map(m => m.SchülerVolljährigJN).Name("Schüler: Volljährig (J/N)");
-        Map(m => m.SchülerVorgangSchuljahr).Name("Schüler: Vorgang Schuljahr");
         Map(m => m.SchülerVorname).Name("Schüler: Vorname");
-        Map(m => m.SchülerWird16Am).Name("Schüler: wird 16 am");
-        Map(m => m.SchülerWird18Am).Name("Schüler: wird 18 am");
-        Map(m => m.SorgeberechtigungJN).Name("Sorgeberechtigung (J/N)");
-        Map(m => m.SorgeberechtigungTyp).Name("Sorgeberechtigung Typ");
-        Map(m => m.SozialversNr).Name("Sozialvers.Nr.");
-        Map(m => m.Staatsangehörigkeit).Name("Staatsangehörigkeit");
-        Map(m => m.SwiftBICCode).Name("Swift-(BIC)-Code");
-        Map(m => m.Telefax).Name("Telefax");
-        Map(m => m.Telefon1).Name("Telefon 1");
-        Map(m => m.Telefon1Typ).Name("Telefon 1 Typ");
-        Map(m => m.Telefon2).Name("Telefon 2");
-        Map(m => m.Telefon2Typ).Name("Telefon 2 Typ");
-        Map(m => m.Telefon3).Name("Telefon 3");
-        Map(m => m.Telefon3Typ).Name("Telefon 3 Typ");
-        Map(m => m.Telefon4).Name("Telefon 4");
-        Map(m => m.Telefon4Typ).Name("Telefon 4 Typ");
-        Map(m => m.TextfeldAuszubildende).Name("Textfeld: Auszubildende/r");
-        Map(m => m.TextfeldDemDerGroß).Name("Textfeld: Dem/Der (groß)");
-        Map(m => m.TextfeldDemDerKlein).Name("Textfeld: dem/der (klein)");
-        Map(m => m.TextfeldDenDieGroß).Name("Textfeld: Den/Die (groß)");
-        Map(m => m.TextfeldDenDieKlein).Name("Textfeld: den/die (klein)");
-        Map(m => m.TextfeldDerDieGroß).Name("Textfeld: Der/Die (groß)");
-        Map(m => m.TextfeldDerDieKlein).Name("Textfeld: der/die (klein)");
-        Map(m => m.TextfeldDesSchülersDerSchülerin).Name("Textfeld: des Schülers/der Schülerin");
-        Map(m => m.TextfeldDesDerGroß).Name("Textfeld: Des/Der (groß)");
-        Map(m => m.TextfeldDesDerKlein).Name("Textfeld: des/der (klein)");
-        Map(m => m.TextfeldErSieGroß).Name("Textfeld: Er/Sie (groß)");
-        Map(m => m.TextfeldErSieKlein).Name("Textfeld: er/sie (klein)");
-        Map(m => m.TextfeldHerrFrau).Name("Textfeld: Herr/Frau");
-        Map(m => m.TextfeldIhrSohnIhreTochter).Name("Textfeld: Ihr Sohn/Ihre Tochter");
-        Map(m => m.TextfeldIhrIhreGroß).Name("Textfeld: Ihr/Ihre (groß)");
-        Map(m => m.TextfeldIhrIhreKlein).Name("Textfeld: ihr/ihre (klein)");
-        Map(m => m.TextfeldIhremSohnIhrerTochter).Name("Textfeld: Ihrem Sohn/Ihrer Tochter");
-        Map(m => m.TextfeldIhrenSohnIhreTochter).Name("Textfeld: Ihren Sohn/Ihre Tochter");
-        Map(m => m.TextfeldIhresSohnesIhrerTochter).Name("Textfeld: Ihres Sohnes/Ihrer Tochter");
-        Map(m => m.TextfeldJungeMädchen).Name("Textfeld: Junge/Mädchen");
-        Map(m => m.TextfeldSchülerIn).Name("Textfeld: Schüler/in");
-        Map(m => m.TextfeldSeinIhrGroß).Name("Textfeld: Sein/Ihr (groß)");
-        Map(m => m.TextfeldSeinIhrKlein).Name("Textfeld: sein/ihr (klein)");
-        Map(m => m.TextfeldSeineIhreGroß).Name("Textfeld: Seine/Ihre (groß)");
-        Map(m => m.TextfeldSeineIhreKlein).Name("Textfeld: seine/ihre (klein)");
-        Map(m => m.TextfeldSeinemIhremGroß).Name("Textfeld: Seinem/Ihrem (groß)");
-        Map(m => m.TextfeldSeinemIhremKlein).Name("Textfeld: seinem/ihrem (klein)");
-        Map(m => m.TextfeldSeinerIhrerGroß).Name("Textfeld: Seiner/Ihrer (groß)");
-        Map(m => m.TextfeldSeinerIhrerKlein).Name("Textfeld: seiner/ihrer (klein)");
-        Map(m => m.TextfeldSeinesIhresGroß).Name("Textfeld: Seines/Ihres (groß)");
-        Map(m => m.TextfeldSeinesIhresKlein).Name("Textfeld: seines/ihres (klein)");
-        Map(m => m.TextfeldSohnTochter).Name("Textfeld: Sohn/Tochter");
-        Map(m => m.SchülerTypDerAdresse).Name("Schüler: Typ der Adresse");
-        Map(m => m.TypDTAUSVerfahren).Name("Typ DTAUS-Verfahren");
-        Map(m => m.VerkehrsMuttersprache).Name("Verkehrs-/Muttersprache");
-        Map(m => m.Vorlagensprache).Name("Vorlagensprache");
-        Map(m => m.ZahlVerkehrGutschrift).Name("Zahl.-Verkehr (Gutschrift)");
-        Map(m => m.ZahlungsplanErwuenscht).Name("Zahlungsplan erwünscht");
-        Map(m => m.Zahlungsverkehr).Name("Zahlungsverkehr");
-        Map(m => m.Zahlweise).Name("Zahlweise");
-        Map(m => m.ZeigerAufAdressentabelle).Name("Zeiger auf Adressentabelle");
-        Map(m => m.ZeigerAufBetriebesatz).Name("Zeiger auf Betriebesatz");
-        Map(m => m.ZeigerAufGebaeudesatz).Name("Zeiger auf Gebäudesatz");
-        Map(m => m.ZeigerAufHeimBT).Name("Zeiger auf Heim (BT)");
-        Map(m => m.ZeigerAufLaufbahnsatz).Name("Zeiger auf Laufbahnsatz");
-        Map(m => m.ZeigerAufLehrerstammsatz).Name("Zeiger auf Lehrerstammsatz");
-        Map(m => m.ZeigerAufSchulensatz).Name("Zeiger auf Schulensatz");
-        Map(m => m.ZeigerAufSchuelersatz).Name("Zeiger auf Schülersatz");
-        Map(m => m.ZeigerAufStammIDAdresse).Name("Zeiger auf Stamm-ID Adresse");
-        Map(m => m.ZeigerAufStammIDBetrieb).Name("Zeiger auf Stamm-ID Betrieb");
-        Map(m => m.ZeigerAufStammIDLehrer).Name("Zeiger auf Stamm-ID Lehrer");
-        Map(m => m.ZeigerAufStammIDSchule).Name("Zeiger auf Stamm-ID Schule");
-        Map(m => m.ZeigerAufStammIDSchueler).Name("Zeiger auf Stamm-ID Schüler");
-        Map(m => m.ZeigerAufVertragssatz).Name("Zeiger auf Vertragssatz");
-        Map(m => m.ZeitstempelLetzteAenderung).Name("Zeitstempel letzte Änderung");
+        Map(m => m.AdresseAusweisnummer).Name("Adresse: Ausweisnummer");
+        Map(m => m.AdresseDatumAustritt).Name("Adresse: Datum Austritt");
+        Map(m => m.AdresseDatumEintritt).Name("Adresse: Datum Eintritt");
+        Map(m => m.AdresseDatumGeburt).Name("Adresse: Datum Geburt");
+        Map(m => m.AdresseEmail).Name("Adresse: E-Mail");
+        Map(m => m.AdresseEmailKomplett).Name("Adresse: E-Mail (komplett)");
+        Map(m => m.AdresseFamilienstand).Name("Adresse: Familienstand");
+        Map(m => m.AdresseExterneID).Name("Adresse: externe ID");
+        Map(m => m.AdresseOrt).Name("Adresse: Ort");
+        Map(m => m.AdressePlz).Name("Adresse: Plz");
+        Map(m => m.AdressePostfachPlz).Name("Adresse: Postfach Plz");
+        Map(m => m.AdressePostfach).Name("Adresse: Postfach");
+        Map(m => m.AdresseSorgeberechtigtJN).Name("Adresse: Sorgeberechtigt (J/N)");
+        Map(m => m.AdresseSprache).Name("Adresse: Sprache");
+        Map(m => m.AdresseStaat).Name("Adresse: Staat");
+        Map(m => m.AdresseStraße).Name("Adresse: Straße");
+        Map(m => m.AdresseTelefon1).Name("Adresse: Telefon 1");
+        Map(m => m.AdresseTelefon2).Name("Adresse: Telefon 2");
+        Map(m => m.AdresseTelefon3).Name("Adresse: Telefon 3");
+        Map(m => m.AdresseTitel).Name("Adresse: Titel");
+        Map(m => m.AdresseTypAdresse).Name("Adresse: Typ Adresse");
+        Map(m => m.AdresseTypMitglied).Name("Adresse: Typ Mitgleid");
+        Map(m => m.AdresseTypTelefon1).Name("Adresse: Typ Telefon 1");
+        Map(m => m.AdresseTypTelefon2).Name("Adresse: Typ Telefon 2");
+        Map(m => m.AdresseTypTelefon3).Name("Adresse: Typ Telefon 3");
+        Map(m => m.BetriebAnrede).Name("Betrieb: Anrede");
+        Map(m => m.BetriebAnredetext).Name("Betrieb: Anredetext");
+        Map(m => m.BetriebAnsprechpartner).Name("Betrieb: Ansprechpartner");
+        Map(m => m.BetriebAusbilderAbwVomAnsprPartner).Name("Betrieb: Ausbilder (abw. vom Anspr.Partner)");
+        Map(m => m.BetriebBetriebenummer).Name("Betrieb: Betriebenummer");
+        Map(m => m.BetriebEmailAdresse).Name("Betrieb: E-Mail-Adresse");
+        Map(m => m.BetriebBriefadresse).Name("Betrieb: Briefadresse");
+        Map(m => m.BetriebName1).Name("Betrieb: Name 1");
+        Map(m => m.BetriebName2).Name("Betrieb: Name 2");
+        Map(m => m.BetriebOrt).Name("Betrieb: Ort");
+        Map(m => m.BetriebOrtsteil).Name("Betrieb: Ortsteil");
+        Map(m => m.BetriebPlz).Name("Betrieb: Plz");
+        Map(m => m.BetriebStraße).Name("Betrieb: Straße");
+        Map(m => m.BetriebTelefon1).Name("Betrieb: Telefon 1");
+        Map(m => m.BetriebTelefon2).Name("Betrieb: Telefon 2");
+        Map(m => m.KlasseBereich).Name("Klasse: Bereich");
+        Map(m => m.SchülerGeburtsdatum).Name("Schüler: Geburtsdatum");
+        Map(m => m.SchülerGeburtsname).Name("Schüler: Geburtsname");
+        Map(m => m.SchülerGeburtsort).Name("Schüler: Geburtsort");
+        Map(m => m.SchülerGeschlecht).Name("Schüler: Geschlecht");
+        Map(m => m.SchülerGeschlechtAuflösung).Name("Schüler: Geschlecht (Auflösung)");
+        Map(m => m.SchülerNameElternteil).Name("Schüler: Name Elternteil");
+        Map(m => m.SchülerNummer).Name("Schüler: Nummer");
+        Map(m => m.SchülerStaat).Name("Schüler: Staat");
+        Map(m => m.SchülerStaatAuflösung).Name("Schüler: Staat (Auflösung)");
+        Map(m => m.SchülerMuttersprache).Name("Schüler: Muttersprache");
+        Map(m => m.SchülerMutterspracheAuflösung).Name("Schüler: Muttersprache (Auflösung)");
+        Map(m => m.SchülerVolljährigJN).Name("Schüler: Volljährig (J/N)");
+        Map(m => m.SchülerVorgangSchuljahr).Name("Schüler: Vorgang Schuljahr");        
+        Map(m => m.SchülerAnrede).Name("Adresse: Anrede");
+        Map(m => m.SchülerAnredeAuflösung).Name("Adresse: Anrede (Auflösung)");
+        Map(m => m.SchülerAnredeAnredetext).Name("Adresse: Anredetext");
     }
 }

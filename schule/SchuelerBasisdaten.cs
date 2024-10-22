@@ -110,6 +110,11 @@ public class SchBa : List<SchuelerBasisdatum>
     {
         throw new NotImplementedException();
     }
+
+    internal IEnumerable<Zeile> GetNfsUnd365(Schülers iSchuS)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 
