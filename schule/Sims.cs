@@ -36,9 +36,9 @@ public class Simss : List<Sim>
 
         using (var reader = new StreamReader(dateiPfad))
         using (var csv = new CsvReader(reader, config))
-        {
-            csv.Context.RegisterClassMap<SimsMap>();
+        {            
             csv.Context.TypeConverterCache.AddConverter<string>(new TrimAndReplaceUnderscoreConverter());
+            csv.Context.RegisterClassMap<SimsMap>();
             var records = csv.GetRecords<Sim>();
             this.AddRange(records);
         }
@@ -97,7 +97,7 @@ public class Simss : List<Sim>
 
                     zeile.Add(sim.GSEmpfehlung59);          // ÜbergangsempfJG5
                     zeile.Add(sim.JahrSchulwechsel52);      // JahrWechselS1
-                    zeile.Add("");                           // 1.Schulform S1
+                    zeile.Add("");                          // 1.Schulform S1
                     zeile.Add(sim.JahrSchulwechsel52);      // Jahr Wechsel S2
                     zeile.Add(sim.Foerderschwerp10);        // Förderschwerpunkt
                     zeile.Add(sim.Foerderschwerpunkt263);   // 2.Förderschwerpunkt
@@ -107,7 +107,7 @@ public class Simss : List<Sim>
                     zeile.Add(sim.LSSchulform26);           // LS Schulform
 
                     zeile.Add("");                          // Herkunft
-                    zeile.Add(sim.LSSschulentl32);           // LS Entlassdatum
+                    zeile.Add(sim.LSSschulentl32);          // LS Entlassdatum
                     zeile.Add(sim.LSJahrgang33);            // LS Jahrgang
                     zeile.Add(sim.Lsversetz35);             // LS Versetzung      0 : Ja,  1: Nein, 2: Freiw.Rücktritt
                     zeile.Add(sim.Lsreformpdg31);           // LS Reformpädagogik

@@ -20,7 +20,6 @@ public class Zeile : List<string>
     }
 
     public Zeile()
-    {
-        
+    {   
     }
 }

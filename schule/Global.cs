@@ -27,7 +27,7 @@ public static class Global
     {
         if (text == "h1")
         {
-            text = @"Schule.exe | https://github.com/stbaeumer/Schule | GPLv3 | Stefan Bäumer " + DateTime.Now.Year + @" | 10.10.2024";
+            text = @"Schule.exe | https://github.com/stbaeumer/Schule | GPLv3 | Stefan Bäumer " + DateTime.Now.Year + @" | 23.10.2024";
         }
         if (unterstrich == '=')
         {

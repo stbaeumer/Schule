@@ -70,15 +70,22 @@ do
         if (z[0].Titel.StartsWith("SchuelerBasisdaten") && iSimss.Count() > 0)
         {
             z[0].Zeilen.AddRange(simss.GetSchuelerBasisdaten(iSchuS));
+
+            // SchuelerAdressen.dat
+            // Beschreibung: Enthält weitere Adressen (z.B. von Ausbildungsbetrieben) der Schüler 
+            // Hier werden nicht die Eltern erfasst
             var zieldatei = new Datei("ImportFürSchILD\\SchuelerAdressen.dat", "", new List<string>() { "Nachname", "Vorname", "Geburtsdatum", "Adressart", "Name1", "Name2", "Straße", "PLZ", "Ort", "1. Tel.-Nr.", "2. Tel.-Nr.", "E-Mail", "Betreuer Nachname", "Betreuer Vorname", "Betreuer Anrede", "Betreuer Tel.-Nr.", "Betreuer E-Mail", "Betreuer Abteilung", "Vertragsbeginn", "Vertragsende", "Fax-Nr.", "Bemerkung", "Branche", "Zusatz 1", "Zusatz 2", "SchILD-Adress-ID", "externe Adress-ID" });
             zieldatei.Zeilen.AddRange(allAd.GetSchuelerAdressen(iSchuS));
             z.Add(zieldatei);
+            
             zieldatei = new Datei("ImportFürSchILD\\SchuelerTelefonnummern.dat", "", new List<string>() { "Nachname", "Vorname", "Geburtsdatum", "Telefonnr.", "Art" });
             zieldatei.Zeilen.AddRange(allAd.GetSchuelerTelefonnummern(iSchuS));
             z.Add(zieldatei);
+            
             zieldatei = new Datei("ImportFürSchILD\\SchuelerZusatzdaten.dat", "", new List<string>() { "Nachname", "Vorname", "Geburtsdatum", "Namenszusatz", "Geburtsname", "Geburtsort", "Ortsteil", "Telefon-Nr.", "E-Mail", "2. Staatsang.", "Externe ID-Nr", "Sportbefreiung", "Fahrschülerart", "Haltestelle", "Einschulungsart", "Entlassdatum", "Entlassjahrgang", "Datum Schulwechsel", "Bemerkungen", "BKAZVO", "BeginnBildungsgang", "Anmeldedatum", "Bafög", "EP-Jahre", "Fax/Mobilnr", "Ausweisnummer", "schulische E-Mail" });
-            zieldatei.Zeilen.AddRange(allAd.GetSchuelerZusatzdaten(iSchuS));
+            zieldatei.Zeilen.AddRange(allAd.GetSchuelerZusatzdaten(iSchuS));            
             z.Add(zieldatei);
+
             zieldatei = new Datei("ImportFürSchILD\\SchuelerErzieher.dat", "", new List<string>() { "Nachname", "Vorname", "Geburtsdatum", "Erzieherart", "Anrede 1.Person", "Titel 1.Person", "Nachname 1.Person", "Vorname 1.Person", "Anrede 2.Person", "Titel 2.Person", "Nachname 2.Person", "Vorname 2.Person", "Straße", "PLZ", "Ort", "Ortsteil", "E-Mail", "Anschreiben" });
             zieldatei.Zeilen.AddRange(allAd.GetSchuelerErzieher(iSchuS));
             z.Add(zieldatei);

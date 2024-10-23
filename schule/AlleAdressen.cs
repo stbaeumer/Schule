@@ -57,35 +57,42 @@ public class AllAd : List<AlleAdresse>
 
             foreach (var item in ooo)
             {
-                Zeile zeile = new Zeile();
-                zeile.Add(schueler.Nachname);           // Nachname 
-                zeile.Add(schueler.Vorname);            // Vorname 
-                zeile.Add(schueler.Geburtsdatum);       // Geburtsdatum
-                zeile.Add(item.AdresseTypAdresse == "0" ? "Schüler/-in" : item.AdresseTypAdresse == "V" ? "Vater" : item.AdresseTypAdresse == "M" ? "Mutter" : "Betrieb");               //Adressart Als Klartext, z.B. "Betrieb" 
-                zeile.Add("");                         //Name1
-                zeile.Add("");                         //Name2
-                zeile.Add(item.AdresseStraße);                         //Straße
-                zeile.Add(item.AdressePlz);                         //PLZ
-                zeile.Add(item.AdresseOrt);                         //Ort
-                zeile.Add(item.AdresseTelefon1);                         //1. Tel.-Nr.
-                zeile.Add(item.AdresseTelefon2);                         //2. Tel.-Nr.
-                zeile.Add(item.AdresseEmail);                         //E-Mail
-                zeile.Add(item.AdresseName1);                         //Betreuer Nachname
-                zeile.Add(item.AdresseName2);                         //Betreuer Vorname
-                zeile.Add(item.BetriebAnrede);                         //Betreuer Anrede
-                zeile.Add("");                         //Betreuer Tel.-Nr.
-                zeile.Add("");                         //Betreuer E-Mail
-                zeile.Add("");                         //Betreuer Abteilung
-                zeile.Add("");                         //Vertragsbeginn
-                zeile.Add("");                         //Vertragsende
-                zeile.Add("");                         //Fax-Nr.
-                zeile.Add("");                         //Bemerkung
-                zeile.Add("");                         //Branche
-                zeile.Add("");                         //Zusatz 1
-                zeile.Add("");                         //Zusatz 2
-                zeile.Add("");                         //SchILD-Adress-ID
-                zeile.Add("");                         //externe Adress-ID
-                z.Add(zeile);
+                // Für alle mit diesem Schüler verbundene Betriebe
+
+                foreach (var betriebName in ooo.Select(x => x.BetriebName1).Distinct())
+                {
+                    var betrieb = ooo.Where(x => x.BetriebName1 == betriebName).FirstOrDefault();
+
+                    Zeile zeile = new Zeile();
+                    zeile.Add(schueler.Nachname);           // Nachname 
+                    zeile.Add(schueler.Vorname);            // Vorname 
+                    zeile.Add(schueler.Geburtsdatum);       // Geburtsdatum
+                    zeile.Add("Betrieb");               //Adressart Als Klartext, z.B. "Betrieb" 
+                    zeile.Add(item.BetriebName1);                         //Name1
+                    zeile.Add(item.BetriebName2);                         //Name2
+                    zeile.Add(item.BetriebStraße);                         //Straße
+                    zeile.Add(item.BetriebPlz);                         //PLZ
+                    zeile.Add(item.BetriebOrt);                         //Ort
+                    zeile.Add(item.BetriebTelefon1);                         //1. Tel.-Nr.
+                    zeile.Add(item.BetriebTelefon2);                         //2. Tel.-Nr.
+                    zeile.Add(item.BetriebEmailAdresse);                         //E-Mail
+                    zeile.Add(item.BetriebAnsprechpartner);                         //Betreuer Nachname
+                    zeile.Add("");                         //Betreuer Vorname
+                    zeile.Add(item.BetriebAnrede);                         //Betreuer Anrede
+                    zeile.Add("");                         //Betreuer Tel.-Nr.
+                    zeile.Add("");                         //Betreuer E-Mail
+                    zeile.Add("");                         //Betreuer Abteilung
+                    zeile.Add("");                         //Vertragsbeginn
+                    zeile.Add("");                         //Vertragsende
+                    zeile.Add("");                         //Fax-Nr.
+                    zeile.Add("Betrieb-Nr.:" + item.BetriebBetriebenummer); //Bemerkung
+                    zeile.Add("");                                          //Branche
+                    zeile.Add("");                         //Zusatz 1
+                    zeile.Add("");                         //Zusatz 2
+                    zeile.Add("");                         //SchILD-Adress-ID
+                    zeile.Add("");                         //externe Adress-ID
+                    z.Add(zeile);
+                }
             }
         }
         return z;
@@ -197,33 +204,34 @@ public class AllAd : List<AlleAdresse>
             foreach (var item in ooo)
             {
                 Zeile zeile = new Zeile();
-                zeile.Add(schueler.Nachname);           // Nachname
-                zeile.Add(schueler.Vorname);            // Vorname 
-                zeile.Add(schueler.Geburtsdatum);       // Geburtsdatum
-                zeile.Add(item.AdresseTelefon1);        // Nachname|Vorname|Geburtsdatum|Namenszusatz|Geburtsname|Geburtsort|Ortsteil|
-                                                        // zeile.Add(item.SchülerGeburtsname);       // Geburtsname
+                zeile.Add(schueler.Nachname);             // Nachname
+                zeile.Add(schueler.Vorname);              // Vorname 
+                zeile.Add(schueler.Geburtsdatum);         // Geburtsdatum
+                zeile.Add(item.AdresseTelefon1);          // Nachname|Vorname|Geburtsdatum|Namenszusatz|Geburtsname|Geburtsort|Ortsteil|
+                zeile.Add(schueler.Geburtsname);          // zeile.Add(item.SchülerGeburtsname);       // Geburtsname
                 zeile.Add(item.SchülerGeburtsort);        // Geburtsort
-                                                          // Ortsteil (not available in the provided class)
+                zeile.Add(schueler.Ortsteil);             // Ortsteil (not available in the provided class)
                 zeile.Add(item.AdresseTelefon1);          // Telefon-Nr.
                 zeile.Add(item.AdresseEmail);             // E-Mail
                 zeile.Add(item.SchülerStaat);             // 2. Staatsang.
                 zeile.Add(item.AdresseExterneID);         // Externe ID-Nr
-                                                          // Sportbefreiung (not available in the provided class)
-                                                          // Fahrschülerart (not available in the provided class)
-                                                          // Haltestelle (not available in the provided class)
-                                                          // Einschulungsart (not available in the provided class)
-                                                          // Entlassdatum (not available in the provided class)
-                                                          // Entlassjahrgang (not available in the provided class)
-                                                          // Datum Schulwechsel (not available in the provided class)
-                                                          // Bemerkungen (not available in the provided class)
-                                                          // BKAZVO (not available in the provided class)
-                                                          // BeginnBildungsgang (not available in the provided class)
-                                                          // Anmeldedatum (not available in the provided class)
-                                                          // Bafög (not available in the provided class)
-                                                          // EP-Jahre (not available in the provided class)
+                zeile.Add("");                            // Sportbefreiung (not available in the provided class)
+                zeile.Add("");                            // Fahrschülerart (not available in the provided class)
+                zeile.Add("");                            // Haltestelle (not available in the provided class)
+                zeile.Add("");                            // Einschulungsart (not available in the provided class)
+                zeile.Add(schueler.Entlassdatum);         // Entlassdatum (not available in the provided class)
+                zeile.Add("");                            // Entlassjahrgang (not available in the provided class)
+                zeile.Add("");                            // Datum Schulwechsel (not available in the provided class)
+                zeile.Add("");                            // Bemerkungen (not available in the provided class)
+                zeile.Add("");                            // BKAZVO (not available in the provided class)
+                zeile.Add("");                            // BeginnBildungsgang (not available in the provided class)
+                zeile.Add("");                            // Anmeldedatum (not available in the provided class)
+                zeile.Add("");                            // Bafög (not available in the provided class)
+                zeile.Add("");                            // EP-Jahre (not available in the provided class)
                 zeile.Add(item.AdresseTelefon2);          // Fax/Mobilnr
                 zeile.Add(item.AdresseAusweisnummer);     // Ausweisnummer
-                zeile.Add(item.AdresseEmailKomplett);     // schulische E-Mail
+                zeile.Add(schueler.EmailSchulisch);       // schulische E-Mail
+                z.Add(zeile);
             }
         }
         return z;
