@@ -11,24 +11,43 @@ Zuletzt werden die Schülerdaten in einem Rutsch von Atlantis nach Schild übert
 Mit folgenden Schritten gelingt der Übertrag der Schüler*innen:
 
  1. Speichern Sie Schule.exe in den Ordner Ihrer Wahl.
- 2. Starten Sie Schule.exe erstmalig, damit Schule.exe verschiedene Ordner anlegen kann.
+ 2. Starten Sie Schule.exe erstmalig. Es werden verschiedene Ordner angelegt.
  3. Erstellen Sie in Atlantis die Datei sim.csv, indem Sie
-	1. In Atlantis auf ... klicken
-   	2. Die Datei unter dem Namen sim.csv im Ordner Export aus Atlantis ablegen.
+	1. in Atlantis auf ... klicken 
+   	2. die Datei unter dem Namen sim.csv im Ordner Export aus Atlantis ablegen.
  4. Erstellen aus Atlantis die Datei Adressen.csv, indem Sie
    	1. die PSR-Datei hier herunterladen
    	2. die PSR-Datei über den Listegenerator aufrufen und die neue Datei unter dem Namen Adressen.csv im Ordner ExportAusAtlantis ablegen.
  5. Erstellen Sie in Webuntis die Datei student.csv, indem Sie
-   	1. in Webuntis
-   	2. Die Datei unter dem Namen student.csv im Ordner Eport aus Webuntis abspeichern. 
- 6. Starten Sie Schule.exe erneut. Wenn Schule.exe die Dateien finden kann, erweitert sich das Menü um den Punkt SchuelerBasisdaten.dat aus Atlantis-SIM.txt erstellen.
- 7. Klicken Sie den Menüpunkt SchuelerBasisdaten.dat aus Atlantis-SIM.txt erstellen.
- 8. Optional kann die Auswahl der Klassen eingeschränkt werden. Das ist für den Anfang bestimmt eine gute Entscheidung.
- 9. Es werden mehrere Dateien erstellt. Die Dateien liegen nun im Ordner ImportFürSchILD.
- 10. Starten Sie SchILD und gehen Sie den Pfad: Datenaustausch ...
- 11. ...
- 12. Wenn SchILD in der Importdatei Fehler findet, wird das angezeigt. I.d.R. findet aber dennoch ein Import der fehlerfreien Datensätze statt.
- 13. Nach dem Neustart von SchILD sind die Schülerdaten eingetragen.
+   	1. in Webuntis ...
+   	2. die Datei unter dem Namen student.csv im Ordner ExportAusWebuntis abspeichern.
+ 6. Die Ordnerstruktur sieht jetzt so aus: 
+
+```
+Schule.exe
++---ExportAusAtlantis
+|       sim.csv
+|       Adressen.csv
+|       
++---ExportAusWebuntis
+|       Student_20240922_0952.csv 
+|       
+\---ImportFürSchild
+```
+
+ 6. Starten Sie Schule.exe erneut. Wenn Schule.exe die geforderten Dateien finden kann, erweitert sich das Menü um den Punkt SchuelerBasisdaten.dat aus Atlantis-SIM.txt erstellen.
+
+```
+       1. SchuelerBasisdaten.dat aus Atlantis-SIM.txt und Webuntis-Student_...csv erzeugen
+```
+
+ 8. Klicken Sie den Menüpunkt SchuelerBasisdaten.dat aus Atlantis-SIM.txt erstellen.
+ 9. Optional kann die Auswahl der Klassen eingeschränkt werden. Das ist für den Anfang bestimmt eine gute Entscheidung.
+ 10. Es werden mehrere Dateien erstellt. Die Dateien liegen nun im Ordner ImportFürSchILD.
+ 11. Starten Sie SchILD und gehen Sie den Pfad: Datenaustausch ...
+ 12. ...
+ 13. Wenn SchILD in der Importdatei Fehler findet, wird das angezeigt. I.d.R. findet aber dennoch ein Import der fehlerfreien Datensätze statt.
+ 14. Nach dem Neustart von SchILD sind die Schülerdaten eingetragen.
 
 
 
