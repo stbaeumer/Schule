@@ -21,7 +21,6 @@ public static class Global
     public static List<int> AktSj { get; set; }
     public static IEnumerable<char> Delimiter { get; set; }
     public static List<string> ReferenzMerkmale { get; set; }
-    public static Ausgaben Ausgaben { get; set; }
 
     internal static void DisplayHeader(string text = "h1", char unterstrich = '=')
     {
@@ -242,7 +241,10 @@ public static class Global
     }
     public static void OpenWebseite(string url)
     {
-        Console.WriteLine("    Die Seite https://wiki.svws.nrw.de/mediawiki/index.php?title=Schnittstellenbeschreibung#" + url + " wird geöffnet.");
+        if (!url.StartsWith("http"))
+        {
+            Console.WriteLine("    Die Seite https://wiki.svws.nrw.de/mediawiki/index.php?title=Schnittstellenbeschreibung#" + url + " wird geöffnet.");
+        }
 
         try
         {

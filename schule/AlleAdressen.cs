@@ -6,19 +6,26 @@ using System.IO;
 
 public class AllAd : List<AlleAdresse>
 {
+    public string DateiPfad { get; private set; }
+    public string[] Hinweise { get; }
+
+    public AllAd(string dateiPfad)
+    {
+        DateiPfad = dateiPfad;
+    }   
+
     public AllAd(string dateiName, string dateiendung = "*.dat", string delimiter = "|")
     {
-        var dateiPfad = Global.CheckFile(dateiName, dateiendung);
+        DateiPfad = Global.CheckFile(dateiName, dateiendung);
 
-        if (dateiPfad == null)
+        if (DateiPfad == null)
         {
-            var hinweise = new string[] {
-                "Exportieren Sie die Datei aus SchILD, indem Sie:",
-                "In SchILD den Pfad gehen: Datenaustausch > Schnittstelle > Export",
-                "Die Datei auswählen.",
-                "Die Datei speichern im Ordner: " + Directory.GetCurrentDirectory()
-            };
-            Global.ZeileSchreiben(0, dateiName, "keine Datei gefunden", new Exception("keine Datei gefunden"), hinweise);
+            Hinweise = new string[] {
+                "Exportieren Sie die Datei aus Atlantis, indem Sie:",
+                "den Listengenerator starten",
+                "die mitgelieferte PSR-Datei öffnen",
+                "Die Datei Adressen.csv speichern im Ordner: " + Directory.GetCurrentDirectory() };
+            
             return;
         }
 
@@ -32,7 +39,7 @@ public class AllAd : List<AlleAdresse>
             BadDataFound = null
         };
 
-        using (var reader = new StreamReader(dateiPfad))
+        using (var reader = new StreamReader(DateiPfad))
         using (var csv = new CsvReader(reader, config))
         {
             csv.Context.RegisterClassMap<AlleAdressenMap>();
@@ -40,7 +47,11 @@ public class AllAd : List<AlleAdresse>
             var records = csv.GetRecords<AlleAdresse>();
             this.AddRange(records);
         }
-        Global.ZeileSchreiben(0, dateiPfad, this.Count().ToString(), null, null);
+        Global.ZeileSchreiben(0, DateiPfad, this.Count().ToString(), null, null);
+    }
+
+    public AllAd()
+    {
     }
 
     internal List<Zeile> GetSchuelerAdressen(Schülers iSchuS)
@@ -214,7 +225,7 @@ public class AllAd : List<AlleAdresse>
                 zeile.Add(item.AdresseTelefon1);          // Telefon-Nr.
                 zeile.Add(item.AdresseEmail);             // E-Mail
                 zeile.Add(item.SchülerStaat);             // 2. Staatsang.
-                zeile.Add(item.AdresseExterneID);         // Externe ID-Nr
+                zeile.Add(item.SchülerNummer);         // Externe ID-Nr
                 zeile.Add("");                            // Sportbefreiung (not available in the provided class)
                 zeile.Add("");                            // Fahrschülerart (not available in the provided class)
                 zeile.Add("");                            // Haltestelle (not available in the provided class)
@@ -235,6 +246,14 @@ public class AllAd : List<AlleAdresse>
             }
         }
         return z;
+    }
+
+    internal AllAd Interessierende(List<string> interessierendeKlassen)
+    {
+        var x = this.Where(x => interessierendeKlassen.Contains(x.KlasseKlassenbezeichnung)).ToList();
+        var xx = new AllAd(this.DateiPfad);
+        xx.AddRange(x);
+        return xx;
     }
 }
 

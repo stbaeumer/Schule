@@ -7,25 +7,22 @@ using System.IO;
 
 public class SchAd : List<SchuelerAdresse>
 {
-    public SchAd()
+    public SchAd(string dateiPfad)
     {
+        DateiPfad = dateiPfad;
     }
 
     public SchAd(string dateiName, string dateiendung = "*.dat", string delimiter = "|")
     {
-        var dateiPfad = Global.CheckFile(dateiName, dateiendung);
+        DateiPfad = Global.CheckFile(dateiName, dateiendung);
 
-        if (dateiPfad == null)
-        {
-            var hinweise = new string[] {
+        Hinweise = new string[] {
                 "Exportieren Sie die Datei aus SchILD, indem Sie:",
                 "In SchILD den Pfad gehen: Datenaustausch > Schnittstelle > Export",
                 "Die Datei auswählen.",
-                "Die Datei speichern im Ordner: " + Directory.GetCurrentDirectory()
-            };
-            Global.ZeileSchreiben(0, dateiName, "keine Datei gefunden", new Exception("keine Datei gefunden"), hinweise);
-            return;
-        }
+                "Die Datei speichern im Ordner: " + Directory.GetCurrentDirectory() };
+
+        if (DateiPfad == null) { return; }
 
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
@@ -35,7 +32,7 @@ public class SchAd : List<SchuelerAdresse>
             Delimiter = delimiter
         };
 
-        using (var reader = new StreamReader(dateiPfad))
+        using (var reader = new StreamReader(DateiPfad))
         using (var csv = new CsvReader(reader, config))
         {
             csv.Context.RegisterClassMap<SchuelerAdressenMap>();
@@ -44,18 +41,17 @@ public class SchAd : List<SchuelerAdresse>
             this.AddRange(records);
         }
 
-        Global.Ausgaben.Add(new Ausgabe(0, dateiPfad, this.Count().ToString()));
+        Global.ZeileSchreiben(0, DateiPfad, this.Count().ToString(), null, null);
     }
+
+    public string DateiPfad { get; }
+    public string[] Hinweise { get; }
 
     internal SchAd Interessierende(Schülers interessierendeSuS)
     {
-        var schuelerAdressen = new SchAd();
-
+        var schuelerAdressen = new SchAd(this.DateiPfad);
         var x = this.Where(t => interessierendeSuS.Any(s => t.Nachname == s.Nachname && t.Vorname == t.Vorname && t.Geburtsdatum == t.Geburtsdatum)).ToList();
-
         schuelerAdressen.AddRange(x);
-
-        Global.ZeileSchreiben(0, "interessierende SchuelerAdressen", x.Count().ToString(), null, null);
         return schuelerAdressen;
     }
 }

@@ -25,22 +25,25 @@ public class Schülers : List<Schueler>
     public string Aufnahmedatum { get; private set; }
     public string ImportNachSchildPfad { get; private set; }
     public string[] Kopfzeile { get; private set; }
+    public string DateiPfad { get; set; }
+    public string[] Hinweise { get; set; }
 
     public Schülers(string dateiName, string dateiendung = "*.dat", string delimiter = "|")
     {
-        var dateiPfad = Global.CheckFile(dateiName, dateiendung);
+        DateiPfad = Global.CheckFile(dateiName, dateiendung);
 
-        if (dateiPfad == null)
-        {
-            var hinweise = new string[] {
+        Hinweise = new string[] {
                 "Exportieren Sie die Datei aus SchILD, indem Sie:",
-                "In SchILD den Pfad gehen: Datenaustausch > Schnittstelle > Export",
-                "Die Datei auswählen.",
-                "Die Datei speichern im Ordner: " + Directory.GetCurrentDirectory()
-            };
-            Global.ZeileSchreiben(0, dateiName, "keine Datei gefunden", new Exception("keine Datei gefunden"), hinweise);
-            return;
-        }
+                "in SchILD den Pfad gehen: Datenaustausch > Export in Text-/Exceldateien > Exportieren",
+                "Datenart: Schüler wählen",
+                "In die linke Spalten klicken, um dann mit dem Doppelpfeil alle Elemente nach rechts zu schieben",
+                "Feldtrennzeichen ändern auf: | (senkrechter Strich)",
+                "Ausgabedatei namens SchildSchuelerExport.txt in diesem Ordner anlegen: " + Directory.GetCurrentDirectory() + "\\ExportAusSchILD",
+                "Unicodeformat anhaken (falls nicht angehakt)",
+                "Vorlage unter dem Namen SchildSchuelerExport abspeichern",
+                "Export starten"};
+
+        if (DateiPfad == null) { return; }
 
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
@@ -50,7 +53,7 @@ public class Schülers : List<Schueler>
             Delimiter = delimiter
         };
 
-        using (var reader = new StreamReader(dateiPfad))
+        using (var reader = new StreamReader(DateiPfad))
         using (var csv = new CsvReader(reader, config))
         {
             csv.Context.RegisterClassMap<SchuelersMap>();
@@ -64,7 +67,7 @@ public class Schülers : List<Schueler>
             }
         }
 
-        Global.Ausgaben.Add(new Ausgabe(0, dateiPfad, this.Count().ToString()));
+        Global.ZeileSchreiben(0, DateiPfad, this.Count().ToString(), null);
     }
 
     public class SchuelersMap : ClassMap<Schueler>
@@ -671,8 +674,14 @@ public class Schülers : List<Schueler>
 
             this.Add(schueler);
         }
-        
-        Global.Ausgaben.Add(new Ausgabe(0, "Schüler*innen aus schuelerBasisdaten", this.Count().ToString()));
+
+        var hinweise = new string[] {
+                "Exportieren Sie die Datei aus SchILD, indem Sie:",
+                "In SchILD den Pfad gehen: Datenaustausch > Schnittstelle > Export",
+                "Die Datei auswählen.",
+                "Die Datei speichern im Ordner: " + Directory.GetCurrentDirectory() };
+
+        Global.ZeileSchreiben(0, "Schüler*innen aus schuelerBasisdaten", this.Count().ToString(), null);
     }
 
     public Schülers(Studs students)
@@ -689,7 +698,14 @@ public class Schülers : List<Schueler>
             schueler.Geburtsdatum = student.BirthDate;
             this.Add(schueler);
         }
-        Global.Ausgaben.Add(new Ausgabe(0, "Schüler*innen aus students_", this.Count().ToString()));
+
+        var hinweise = new string[] {
+                "Exportieren Sie die Datei aus SchILD, indem Sie:",
+                "In SchILD den Pfad gehen: Datenaustausch > Schnittstelle > Export",
+                "Die Datei auswählen.",
+                "Die Datei speichern im Ordner: " + Directory.GetCurrentDirectory() };
+
+        Global.ZeileSchreiben(0, "Schüler*innen aus students_", this.Count().ToString(), null);
     }
 
     private List<string> GetKopfzeile()
@@ -766,6 +782,7 @@ public class Schülers : List<Schueler>
 
         InteressierendeKlassen = new List<string>();
         InteressierendeSchuelers = new Schülers();
+        InteressierendeSchuelers.DateiPfad = this.DateiPfad;
 
         var linkeSeite = "Sie haben diese Klassen gewählt:";
         var rechteSeite = "keine";
@@ -866,6 +883,58 @@ public class Schülers : List<Schueler>
         }
 
         return InteressierendeSchuelers;
+    }
+
+    public Zeilen GetLeistungsdaten(AbsSt absencePerStudents, ExpLe exportLessons, Marks marksPerLessons, StgrS studentgroupStudents)
+    {
+        Zeilen zeilen = new Zeilen();
+
+        try
+        {
+            foreach (var schueler in this)
+            {
+                foreach (var zeile in (from zeile in exportLessons
+                                       where zeile.Klassen.Split('~').Contains(schueler.Klasse)
+                                       select zeile).ToList())
+                {
+                    string note = schueler.GetNote(marksPerLessons);
+
+                    if (zeile.Klassen.Contains(schueler.Klasse))
+                    {
+                        if (zeile.Studentgroup == "") // Klassenunterricht werden immer hinzugefügt
+                        {
+                            zeilen.Add(new Zeile(new List<string>()
+                            {
+                                schueler.Nachname,
+                                schueler.Vorname,
+                                schueler.Geburtsdatum,
+                                schueler.AktuellesHalbjahr,
+                                schueler.AktuellerAbschnitt,
+                                zeile.Subject,
+                                zeile.Teacher,
+                                "PUK",  // Pflichtunterricht im Klassenverband
+                                "",     // Kein Kursname
+                                note,
+                                zeile.Periods,
+                                "", // ExterneSchulnr
+                                "", // Zusatzkraft
+                                "", // WochenstdZK
+                                "", // Jahrgang
+                                "", // Jahrgänge
+                                schueler.GetFehlstd(absencePerStudents),
+                                schueler.GetUnentFehlstd(absencePerStudents)
+                            }));
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+            Console.ReadKey();
+        }
+        return zeilen;
     }
 
     //internal Datei SchuelerLernabschnittsdaten(Datei lernabschnittsdaten, Datei exportLessons, Datei studentgroupStudents, Datei absencePerStudent, Datei marksPerLesson, string[] kopfzeile, string v)

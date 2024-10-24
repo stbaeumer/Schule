@@ -214,13 +214,6 @@ public class Datei
 
     public string CheckFile(string dateiPfad = "")
     {
-        // Wenn kein Parameter übergeben wird, dann wird der Dateipfad der Instanz verwendet, wobei Import durch Export ersetzt wird.
-
-        if (dateiPfad == "")
-        {
-            dateiPfad = DateiPfad.Replace("ImportFür", "ExportAus");
-        }
-
         var extensions = new List<string> { "*.csv", "*.dat", "*.TXT" };
 
         if (!Path.Exists(Path.GetDirectoryName(dateiPfad)))
@@ -235,8 +228,7 @@ public class Datei
                           select f).LastOrDefault();
         if (sourceFile == null)
         {
-            sourceFile = dateiPfad;
-            Fehler = new FileNotFoundException("nicht vorhanden.");
+            Fehler = new FileNotFoundException("nicht vorhanden.");         
         }
         return sourceFile;
     }
@@ -842,6 +834,11 @@ public class Datei
         Kopfzeile = menü.Kopfzeile;
         Zeilen = new Zeilen();
         Zeilen.Add(new Zeile(Kopfzeile));
+    }
+
+    public Datei(string dateiPfad)
+    {
+        DateiPfad = dateiPfad;
     }
 
     public List<string> GetReferenzspalten(List<string> referenzmerkmale)

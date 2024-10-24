@@ -6,25 +6,25 @@ using System.IO;
 
 public class AbsSt : List<AbsencePerStudent>
 {
-    public AbsSt()
+    public string DateiPfad { get; private set; }
+    public string[] Hinweise { get; }
+
+    public AbsSt(string dateiPfad)
     {
+        DateiPfad = dateiPfad;
     }
 
     public AbsSt(string dateiName, string dateiendung = "*.dat", string delimiter = "|")
     {
-        var dateiPfad = Global.CheckFile(dateiName, dateiendung);
+        DateiPfad = Global.CheckFile(dateiName, dateiendung);
 
-        if (dateiPfad == null)
-        {
-            var hinweise = new string[] {
+        Hinweise = new string[] {
                 "Exportieren Sie die Datei aus SchILD, indem Sie:",
                 "In SchILD den Pfad gehen: Datenaustausch > Schnittstelle > Export",
                 "Die Datei auswählen.",
-                "Die Datei speichern im Ordner: " + Directory.GetCurrentDirectory()
-            };
-            Global.ZeileSchreiben(0, dateiName, "keine Datei gefunden", new Exception("keine Datei gefunden"), hinweise);
-            return;
-        }
+                "Die Datei speichern im Ordner: " + Directory.GetCurrentDirectory()};
+
+        if (DateiPfad == null) { return; }
 
         // Konfiguration für CsvReader: Header und Delimiter anpassen
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -35,7 +35,7 @@ public class AbsSt : List<AbsencePerStudent>
             Delimiter = delimiter
         };
 
-        using (var reader = new StreamReader(dateiPfad))
+        using (var reader = new StreamReader(DateiPfad))
         using (var csv = new CsvReader(reader, config))
         {
             csv.Context.RegisterClassMap<AbsencePerStudentsMap>();
@@ -43,15 +43,14 @@ public class AbsSt : List<AbsencePerStudent>
             var records = csv.GetRecords<AbsencePerStudent>();
             this.AddRange(records);
         }
-        Global.Ausgaben.Add(new Ausgabe(0, dateiPfad, this.Count().ToString()));
+        Global.ZeileSchreiben(0, DateiPfad, this.Count().ToString(), null);
     }
 
     internal AbsSt Interessierende(List<string> interessierendeKlassen)
     {
         var x = this.Where(x => interessierendeKlassen.Contains(x.Klasse)).ToList();
-        var xx = new AbsSt();
+        var xx = new AbsSt(this.DateiPfad);
         xx.AddRange(x);
-        Global.ZeileSchreiben(0, "interessierende SchuelerBasisdaten", x.Count().ToString(), null, null);
         return xx;
     }
 }

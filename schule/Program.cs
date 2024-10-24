@@ -5,11 +5,17 @@ using System.Resources;
 using System.Text;
 using System.IO;
 using static Global;
+using DocumentFormat.OpenXml.Office.MetaAttributes;
+using DocumentFormat.OpenXml.Drawing;
 
 Console.WindowHeight = 40;
 Global.DisplayHeader();
-Global.Ausgaben = new Ausgaben();
+
 Schülers schülers = new Schülers(@"ExportAusSchild\SchildSchuelerExport", "*.txt");
+
+Simss simss = new Simss(@"ExportAusAtlantis\sim.csv", "*.csv", ";");
+AllAd allAd = new AllAd(@"ExportAusAtlantis\Adressen.csv", "*.csv", ";");
+
 SchAd schAd = new SchAd(@"ExportAusSchild\SchuelerAdressen");
 Adres adres = new Adres(@"ExportAusSchild\Adressen");
 Kurse kurse = new Kurse(@"ExportAusSchild\Kurse");
@@ -24,28 +30,24 @@ ExpLe expLe = new ExpLe(@"ExportAusWebuntis\ExportLessons", "*.csv", "\t");
 StgrS stgrS = new StgrS(@"ExportAusWebuntis\StudentgroupStudents", "*.csv", "\t");
 Studs studs = new Studs(@"ExportAusWebuntis\Student_", "*.csv", "\t");
 AbsSt absSt = new AbsSt(@"ExportAusWebuntis\AbsencePerStudent", "*.csv", "\t");
-Simss simss = new Simss(@"ExportAusAtlantis\sim.csv", "*.csv", ";");
-AllAd allAd = new AllAd(@"ExportAusAtlantis\Adressen.csv", "*.csv", ";");
 
-// Schüler generieren
-if (schülers.Count == 0)
-{
-    schülers = new Schülers(studs);
-}
 
+if (schülers.Count == 0) { schülers = new Schülers(studs); }
 
 do
 {   
     Menüeintrag menüauswahl = new Menü().Display(new List<Menüeintrag>() 
     {
-         new Menüeintrag("SchuelerBasi", simss.Count),
-         new Menüeintrag("WebuntisImpo", schBa.Count + schAd.Count + adres.Count),
-         new Menüeintrag("SchuelerLeis", schBa.Count + expLe.Count),
-         new Menüeintrag("SchuelerTeil", schBa.Count + marks.Count()),
-         new Menüeintrag("Klassen", schBa.Count()),
+         new Menüeintrag("SchuelerBasi", allAd, simss),
+         new Menüeintrag("Unterrichtsverteilung", expLe, stgrS, schülers),
+         new Menüeintrag("WebuntisImpo", schBa, schAd, adres),
+         new Menüeintrag("SchuelerTeil", schBa, marks),
+         new Menüeintrag("Klassen", schBa ),
          new Menüeintrag("PDF-Kennwort"),
          new Menüeintrag("NFS365"),
     });
+
+    if(menüauswahl.Display(simss, allAd, schBa, marks, expLe, schAd, adres, schülers, stgrS)) { break; }
 
     do
     {
@@ -59,6 +61,7 @@ do
 
         var iSchuS = schülers.Interessierende(z[0]); if (iSchuS.Keine()) { break; }
         var iKlass = iSchuS.Select(x => x.Klasse).Distinct().ToList();
+
         var iSimss = simss.Interessierende(iKlass);
         var iSchBa = schBa.Interessierende(iKlass);
         var iExpLe = expLe.Interessierende(iKlass);
@@ -66,6 +69,10 @@ do
         var iMarks = marks.Interessierende(iKlass);
         var iStgrS = stgrS.Interessierende(iKlass);
         var iSchAd = schAd.Interessierende(iSchuS);
+        var iAllAd = allAd.Interessierende(iKlass);
+        var iAdres = adres.Interessierende(iSchuS);
+
+        if (menüauswahl.Display(iSimss, iAllAd, iSchBa, iMarks, iExpLe, iSchAd, iAdres, iSchuS, iStgrS)) { break; }
 
         if (z[0].Titel.StartsWith("SchuelerBasisdaten") && iSimss.Count() > 0)
         {
@@ -91,8 +98,11 @@ do
             z.Add(zieldatei);
         }
 
-        if (z[0].Titel.StartsWith("SchuelerLeistungsd") && iExpLe.Count() > 0)
-            z[0].Zeilen.AddRange(schBa.GetLeistungsdaten(iAbsSt, iSchuS, iExpLe, iMarks, iStgrS));
+        if (z[0].Titel.StartsWith("Unterrichtsverteilung") && iExpLe.Count() > 0) 
+        {
+            z[0].Zeilen.AddRange(iSchuS.GetLeistungsdaten(iAbsSt, iExpLe, iMarks, iStgrS));
+        }
+        
         if (z[0].Titel.StartsWith("SchuelerTeilleistu") && iSchuS.Count() > 0)
             z[0].Zeilen.AddRange(schBa.GetSchuelerTeilleistung(iSchAd, iSchAd));
         if (z[0].Titel.StartsWith("Kopien von PDF-Dateien") && iSchuS.Count() > 0)
@@ -109,7 +119,8 @@ do
 
         foreach (var zielDatei in z)
         {
-            string vergleichsdateiDateiPfad = zielDatei.CheckFile();
+            Datei vergleichsdatei = new Datei();            
+            vergleichsdatei.DateiPfad = vergleichsdatei.CheckFile(zielDatei.DateiPfad.Replace("Export", "Import"));
 
             //if (vergleichsdateiDateiPfad != null && vergleichsdateiDateiPfad.ToLower().Contains("export"))
             //{

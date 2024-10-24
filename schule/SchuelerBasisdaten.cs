@@ -6,23 +6,26 @@ using System.IO;
 
 public class SchBa : List<SchuelerBasisdatum>
 {
-    public SchBa() { }
+    public string DateiPfad { get; private set; }
+    public string[] Hinweise { get; }
+
+    public SchBa(string dateiPfad) 
+    {
+        DateiPfad = dateiPfad;
+    }
 
     public SchBa(string dateiName, string dateiendung = "*.dat", string delimiter = "|")
     {
-        var dateiPfad = Global.CheckFile(dateiName, dateiendung);
+        DateiPfad = Global.CheckFile(dateiName, dateiendung);
 
-        if (dateiPfad == null)
-        {
-            var hinweise = new string[] {
-                "Exportieren Sie die Datei aus SchILD, indem Sie:",
-                "In SchILD den Pfad gehen: Datenaustausch > Schnittstelle > Export",
-                "Die Datei auswählen.",
-                "Die Datei speichern im Ordner: " + Directory.GetCurrentDirectory()
-            };
-            Global.ZeileSchreiben(0, dateiName, "keine Datei gefunden", new Exception("keine Datei gefunden"), hinweise);
-            return;
-        }
+        Hinweise = new string[] {
+                "Exportieren Sie die Datei aus Atlantis:",
+                "Dialog zur Erstellung der SIM.txt aufrufen",
+                "Liste gemäß Suchkriterien klicken",
+                "Druck/Export > Export (sichtbare) Felder (CSV ;)",
+                "Die Datei speichern unter sim.csv im Ordner: " + Directory.GetCurrentDirectory()};
+
+        if (DateiPfad == null){ return; }
 
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
@@ -32,7 +35,7 @@ public class SchBa : List<SchuelerBasisdatum>
             Delimiter = delimiter
         };
 
-        using (var reader = new StreamReader(dateiPfad))
+        using (var reader = new StreamReader(DateiPfad))
         using (var csv = new CsvReader(reader, config))
         {
             csv.Context.RegisterClassMap<SchuelerBasisdatenMap>();
@@ -40,70 +43,15 @@ public class SchBa : List<SchuelerBasisdatum>
             var records = csv.GetRecords<SchuelerBasisdatum>();
             this.AddRange(records);
         }
-        Global.Ausgaben.Add(new Ausgabe(0, dateiPfad, this.Count().ToString()));
+        Global.ZeileSchreiben(0, DateiPfad, this.Count().ToString(), null);
     }
 
     internal SchBa Interessierende(List<string> interessierendeKlassen)
     {
         var x = this.Where(x => interessierendeKlassen.Contains(x.Klasse)).ToList();
-        var xx = new SchBa();
+        var xx = new SchBa(this.DateiPfad);
         xx.AddRange(x);
-        Global.ZeileSchreiben(0, "interessierende SchuelerBasisdaten", x.Count().ToString(), null, null);
         return xx;
-    }
-
-    public Zeilen GetLeistungsdaten(AbsSt absencePerStudents, Schülers interessierendeSchuelers, ExpLe exportLessons, Marks marksPerLessons, StgrS studentgroupStudents)
-    {
-        Zeilen zeilen = new Zeilen();
-
-        try
-        {
-            foreach (var schueler in interessierendeSchuelers)
-            {
-                SchuelerBasisdatum sB = this.Find(x => x.Vorname == schueler.Vorname && x.Nachname == schueler.Nachname && x.Klasse == schueler.Klasse);
-
-                foreach (var zeile in (from zeile in exportLessons
-                                       where zeile.Klassen.Split('~').Contains(schueler.Klasse)
-                                       select zeile).ToList())
-                {
-                    string note = schueler.GetNote(marksPerLessons);
-
-                    if (zeile.Klassen.Contains(schueler.Klasse))
-                    {
-                        if (zeile.Studentgroup == "") // Klassenunterricht werden immer hinzugefügt
-                        {
-                            zeilen.Add(new Zeile(new List<string>()
-                            {
-                                sB.Nachname,
-                                sB.Vorname,
-                                sB.Geburtsdatum,
-                                sB.Jahr,
-                                sB.Abschnitt,
-                                zeile.Subject,
-                                zeile.Teacher,
-                                "PUK",  // Pflichtunterricht im Klassenverband
-                                "",     // Kein Kursname
-                                note,
-                                zeile.Periods,
-                                "", // ExterneSchulnr
-                                "", // Zusatzkraft
-                                "", // WochenstdZK
-                                "", // Jahrgang
-                                "", // Jahrgänge
-                                schueler.GetFehlstd(absencePerStudents),
-                                schueler.GetUnentFehlstd(absencePerStudents)
-                            }));
-                        }
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.ToString());
-            Console.ReadKey();
-        }
-        return zeilen;
     }
 
     internal IEnumerable<Zeile> GetSchuelerTeilleistung(SchAd iSchAd1, SchAd iSchAd2)

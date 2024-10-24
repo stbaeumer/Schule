@@ -15,9 +15,7 @@ public class Menü : List<Menüeintrag>
     public string Titel { get; private set; }
     public List<string> Kopfzeile { get; private set; }
 
-    public Menü()
-    {
-    }
+    public Menü(){}
 
     internal Menüeintrag Display(List<Menüeintrag> menüeintrags)
     {
@@ -34,7 +32,7 @@ public class Menü : List<Menüeintrag>
         Auswahl = xx != null ? Math.Max(1,xx + 1) : 1;
 
         for (int i = 0; i < this.Where(x => x != null && !string.IsNullOrEmpty(x.Titel)).Count(); i++)
-        {
+        {   
             Console.WriteLine(" " + (i + 1).ToString().PadLeft(3) + ". " + this[i].Titel.PadRight(13));
         }
 

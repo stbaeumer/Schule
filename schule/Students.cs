@@ -12,19 +12,15 @@ public class Studs : List<Student>
 
     public Studs(string dateiName, string dateiendung = "*.dat", string delimiter = "|")
     {
-        var dateiPfad = Global.CheckFile(dateiName, dateiendung);
+        DateiPfad = Global.CheckFile(dateiName, dateiendung);
 
-        if (dateiPfad == null)
-        {
-            var hinweise = new string[] {
+        Hinweise = new string[] {
                 "Exportieren Sie die Datei aus SchILD, indem Sie:",
                 "In SchILD den Pfad gehen: Datenaustausch > Schnittstelle > Export",
                 "Die Datei auswählen.",
-                "Die Datei speichern im Ordner: " + Directory.GetCurrentDirectory()
-            };
-            Global.ZeileSchreiben(0, dateiName, "keine Datei gefunden", new Exception("keine Datei gefunden"), hinweise);
-            return;
-        }
+                "Die Datei speichern im Ordner: " + Directory.GetCurrentDirectory()};
+
+        if (DateiPfad == null) { return; }
 
         // Konfiguration für CsvReader: Header und Delimiter anpassen
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -35,7 +31,7 @@ public class Studs : List<Student>
             Delimiter = delimiter
         };
 
-        using (var reader = new StreamReader(dateiPfad))
+        using (var reader = new StreamReader(DateiPfad))
         using (var csv = new CsvReader(reader, config))
         {
             csv.Context.TypeConverterCache.AddConverter<string>(new TrimAndReplaceUnderscoreConverter());
@@ -43,8 +39,11 @@ public class Studs : List<Student>
             var records = csv.GetRecords<Student>();
             this.AddRange(records);
         }
-        Global.Ausgaben.Add(new Ausgabe(0, dateiPfad, this.Count().ToString()));
+        Global.ZeileSchreiben(0, DateiPfad, this.Count().ToString(), null);
     }
+
+    public string DateiPfad { get; private set; }
+    public string[] Hinweise { get; }
 
     internal Studs Interessierende(List<string> interesserendeKlassen)
     {
