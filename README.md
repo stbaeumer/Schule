@@ -1,7 +1,57 @@
 # Schule.exe
 
-**_Schule.exe_** bietet Unterstützung in der Schulverwaltung an Schnittstellen zwischen Programmen. Z.B. ...
+**_Schule.exe_** bietet Unterstützung an Schnittstellen zwischen Programmen in der Schulverwaltung:
 
+## 1. Migration von Atlantis nach SchILD NRW
+
+Ein Wechsel von Atlantis nach SchILD NRW beginnt damit, dass alle Einstellungen und Stammdaten nach SchILD NRW übernommen werden. Fächer können direkt aus Untis exportiert und in SchILD importiert werden. Lehrkräfte können aus der Lehrer.txt übernommen werden. 
+
+Zuletzt werden die Schülerdaten in einem Rutsch von Atlantis nach Schild übertragen. Ab diesem Moment ist Schild das Produktivsystem. Atlantis kann abgeschaltet werden.
+
+Mit folgenden Schritten gelingt der Übertrag der Schüler*innen:
+
+ 1. Speichern Sie Schule.exe in den Ordner Ihrer Wahl.
+ 2. Starten Sie Schule.exe erstmalig. Es werden verschiedene Ordner angelegt.
+ 3. Erstellen Sie in Atlantis die Datei sim.csv, indem Sie
+	1. in Atlantis auf ... klicken 
+   	2. die Datei unter dem Namen sim.csv im Ordner Export aus Atlantis ablegen.
+ 4. Erstellen aus Atlantis die Datei Adressen.csv, indem Sie
+   	1. die PSR-Datei hier herunterladen
+   	2. die PSR-Datei über den Listegenerator aufrufen und die neue Datei unter dem Namen Adressen.csv im Ordner ExportAusAtlantis ablegen.
+ 5. Erstellen Sie in Webuntis die Datei student.csv, indem Sie
+   	1. in Webuntis ...
+   	2. die Datei unter dem Namen student.csv im Ordner ExportAusWebuntis abspeichern.
+ 6. Die Ordnerstruktur sieht jetzt so aus: 
+
+```
+Schule.exe
++---ExportAusAtlantis
+|       sim.csv
+|       Adressen.csv
+|       
++---ExportAusWebuntis
+|       Student_20240922_0952.csv 
+|       
+\---ImportFürSchild
+```
+
+ 6. Starten Sie Schule.exe erneut. Wenn Schule.exe die geforderten Dateien finden kann, erweitert sich das Menü um den Punkt SchuelerBasisdaten.dat aus Atlantis-SIM.txt erstellen.
+
+```
+       1. SchuelerBasisdaten.dat aus Atlantis-SIM.txt und Webuntis-Student_...csv erzeugen
+```
+
+ 8. Klicken Sie den Menüpunkt SchuelerBasisdaten.dat aus Atlantis-SIM.txt erstellen.
+ 9. Optional kann die Auswahl der Klassen eingeschränkt werden. Das ist für den Anfang bestimmt eine gute Entscheidung.
+ 10. Es werden mehrere Dateien erstellt. Die Dateien liegen nun im Ordner ImportFürSchILD.
+ 11. Starten Sie SchILD und gehen Sie den Pfad: Datenaustausch ...
+ 12. ...
+ 13. Wenn SchILD in der Importdatei Fehler findet, wird das angezeigt. I.d.R. findet aber dennoch ein Import der fehlerfreien Datensätze statt.
+ 14. Nach dem Neustart von SchILD sind die Schülerdaten eingetragen.
+
+
+
+ -  
  - bei der Migration von _Atlantis_ nach _SchILD NRW_, indem Importdateien für _SchILD NRW_ erstellt werden.
  - bei der Haupterhebung, indem Leistungsdaten von _Webuntis_ nach _SchILD NRW_ übertragen werden. Dadurch kann die UVD direkt aus _SchILD NRW_ generiert werden.
  - bei Zeugniskonferenzen, indem Noten und Fehlzeiten von Webuntis nach SchILD übertragen werden.
